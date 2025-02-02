@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -11,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.alvarodazacruces.proyectoalvarofirebase"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -41,7 +43,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.6.0"
     }
     packaging {
         resources {
@@ -72,6 +74,17 @@ dependencies {
     implementation (libs.retrofit)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
+
+
+
+    implementation("com.google.firebase:firebase-auth:21.0.1")  // Para Firebase Authentication
+    implementation("com.google.firebase:firebase-firestore:24.0.0")  // Para Firestore
+    implementation("com.google.firebase:firebase-analytics:21.0.0")  // Si usas Analytics
+
+    // Firebase BoM (Bill of Materials) para mantener las dependencias en versiones compatibles
+    implementation(platform("com.google.firebase:firebase-bom:31.0.2"))
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

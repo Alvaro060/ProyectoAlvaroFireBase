@@ -25,23 +25,23 @@ import androidx.compose.runtime.setValue
 @Composable
 fun PantallaDeInicio(
     viewModel: PokemonSearchViewModel,
-    onNavigateToDetail: (String) -> Unit
+    onNavigateToDetail: (String) -> Unit, // Función para navegar a los detalles del Pokémon
+    onLogout: () -> Unit
 ) {
     val pokemon by viewModel.pokemon.collectAsState()
     val error by viewModel.error.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-
     var inputText by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center // Centra todo el contenido en la pantalla
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 195.dp, bottom = 10.dp) // Mantener los márgenes superior e inferior
+                .padding(top = 195.dp, bottom = 10.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -50,20 +50,18 @@ fun PantallaDeInicio(
                 contentDescription = "Logo",
                 modifier = Modifier.size(200.dp)
             )
-
             Text(
                 text = "Busca tu Pokémon",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
-
             TextField(
                 value = inputText,
                 onValueChange = { inputText = it },
                 label = { Text("Nombre o ID del Pokémon") },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-
             if (showError) {
                 Text(
                     text = "¡Debes ingresar un nombre!",
@@ -71,7 +69,6 @@ fun PantallaDeInicio(
                     modifier = Modifier.padding(8.dp)
                 )
             }
-
             Button(
                 onClick = {
                     if (inputText.isBlank()) {
@@ -87,7 +84,6 @@ fun PantallaDeInicio(
             ) {
                 Text("Buscar Pokémon")
             }
-
             when {
                 isLoading -> CircularProgressIndicator()
                 error != null -> Text("Error: $error", color = Color.Red)
@@ -96,6 +92,15 @@ fun PantallaDeInicio(
                         pokemon?.name?.let { onNavigateToDetail(it) }
                     }
                 }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onLogout,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            ) {
+                Text("Cerrar Sesión")
             }
         }
     }
