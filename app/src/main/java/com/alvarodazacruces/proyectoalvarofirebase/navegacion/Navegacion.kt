@@ -1,6 +1,11 @@
 package com.alvarodazacruces.proyectoalvarofirebase.navegacion
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -16,16 +21,27 @@ fun Navegacion(
     authViewModel: AuthViewModel,
     pokemonSearchViewModel: PokemonSearchViewModel
 ) {
+    // Variable para almacenar el destino inicial
+    var startDestination by remember { mutableStateOf("login") }
+
+    // Verificar el estado de autenticación al inicio
+    LaunchedEffect(Unit) {
+        if (authViewModel.isSignedIn()) {
+            startDestination = "pantalla_inicio"
+        } else {
+            startDestination = "login"
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = startDestination
     ) {
         composable("login") {
             LoginScreen(
                 authViewModel = authViewModel,
                 onLoginSuccess = {
                     navController.navigate("pantalla_inicio") {
-                        // Limpiar todas las rutas anteriores hasta llegar a "login"
                         popUpTo("login") { inclusive = true }
                     }
                 },
@@ -35,7 +51,6 @@ fun Navegacion(
                 onSignInAnonymously = {
                     authViewModel.signInAnonymously()
                     navController.navigate("pantalla_inicio") {
-                        // Limpiar todas las rutas anteriores hasta llegar a "login"
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -46,13 +61,11 @@ fun Navegacion(
                 authViewModel = authViewModel,
                 onSignUpSuccess = {
                     navController.navigate("pantalla_inicio") {
-                        // Limpiar todas las rutas anteriores hasta llegar a "signup"
                         popUpTo("signup") { inclusive = true }
                     }
                 },
                 onNavigateToLogin = {
                     navController.navigate("login") {
-                        // Limpiar todas las rutas anteriores hasta llegar a "signup"
                         popUpTo("signup") { inclusive = true }
                     }
                 }
@@ -67,10 +80,10 @@ fun Navegacion(
                 },
                 onLogout = {
                     authViewModel.logout()
-                    pokemonSearchViewModel.clearState() // Limpia el estado al cerrar sesión
-                    navController.popBackStack() // Elimina la ruta actual
+                    pokemonSearchViewModel.clearState()
+                    navController.popBackStack()
                     navController.navigate("login") {
-                        popUpTo(0) { inclusive = true } // Limpia completamente la pila de navegación
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )

@@ -32,6 +32,13 @@ class AuthViewModel : ViewModel() {
     }
 
     /**
+     * Verifica si el usuario está autenticado.
+     */
+    fun isSignedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
+    /**
      * Inicia sesión con email y password.
      */
     fun login(email: String, password: String) {
