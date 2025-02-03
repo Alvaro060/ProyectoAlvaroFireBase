@@ -3,6 +3,7 @@ package com.alvarodazacruces.proyectoalvarofirebase.model
 import com.google.gson.annotations.SerializedName
 
 data class Pokemon(
+    val id: Int = 0,
     val name: String,
     val types: List<PokemonType>,
     val abilities: List<PokemonAbility>,

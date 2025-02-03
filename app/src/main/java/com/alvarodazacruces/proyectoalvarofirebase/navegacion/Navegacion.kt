@@ -1,16 +1,19 @@
 package com.alvarodazacruces.proyectoalvarofirebase.navegacion
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonListViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.screen.LoginScreen
 import com.alvarodazacruces.proyectoalvarofirebase.screen.SignUpScreen
 import com.alvarodazacruces.proyectoalvarofirebase.screen.DetallePokemonScreen
 import com.alvarodazacruces.proyectoalvarofirebase.screen.PantallaDeInicio
 import com.alvarodazacruces.proyectoalvarofirebase.screen.LogOutScreen
-import com.alvarodazacruces.proyectoalvarofirebase.screen.PokemonSearchViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.screen.PokemonListScreen
+import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
 
 @Composable
 fun Navegacion(
@@ -59,6 +62,7 @@ fun Navegacion(
         composable("pantalla_inicio") {
             PantallaDeInicio(
                 viewModel = pokemonSearchViewModel,
+                navController = navController, // Pasa el navController aquí
                 onNavigateToDetail = { pokemonId ->
                     navController.navigate("detalle_pokemon/$pokemonId")
                 },
@@ -78,6 +82,15 @@ fun Navegacion(
             LogOutScreen(
                 navController = navController,
                 authViewModel = authViewModel
+            )
+        }
+        composable("pokemon_list") {
+            val pokemonListViewModel: PokemonListViewModel = viewModel()
+            PokemonListScreen(
+                viewModel = pokemonListViewModel,
+                onNavigateToDetail = { pokemonId ->
+                    navController.navigate("detalle_pokemon/$pokemonId")
+                }
             )
         }
     }

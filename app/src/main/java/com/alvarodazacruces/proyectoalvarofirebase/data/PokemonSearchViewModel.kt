@@ -1,4 +1,4 @@
-package com.alvarodazacruces.proyectoalvarofirebase.screen
+package com.alvarodazacruces.proyectoalvarofirebase.data
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

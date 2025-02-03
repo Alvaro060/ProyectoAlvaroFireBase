@@ -10,7 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.navegacion.Navegacion
-import com.alvarodazacruces.proyectoalvarofirebase.screen.PokemonSearchViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.ui.theme.ProyectoAlvaroFireBaseTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth

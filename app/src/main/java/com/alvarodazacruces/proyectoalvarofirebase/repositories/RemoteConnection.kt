@@ -2,7 +2,6 @@ package com.alvarodazacruces.proyectoalvarofirebase.repositories
 
 import com.alvarodazacruces.proyectoalvarofirebase.model.Pokemon
 import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonList
-import com.alvarodazacruces.proyectoalvarofirebase.repositories.RemoteService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

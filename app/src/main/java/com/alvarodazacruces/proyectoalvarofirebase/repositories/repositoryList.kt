@@ -1,16 +1,29 @@
 package com.alvarodazacruces.proyectoalvarofirebase.repositories
 
+import com.alvarodazacruces.proyectoalvarofirebase.model.OfficialArtwork
+import com.alvarodazacruces.proyectoalvarofirebase.model.OtherSprites
 import com.alvarodazacruces.proyectoalvarofirebase.model.Pokemon
-import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonList
-import com.alvarodazacruces.proyectoalvarofirebase.repositories.RemoteConnection
+import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonSprites
 
 object repositoryList {
 
     // Obtener una lista de Pokémon
-    suspend fun getListaPokemon(): List<Pokemon> {
+    suspend fun getListaPokemon(limit: Int = 20, offset: Int = 0): List<Pokemon> {
         return try {
-            val response = RemoteConnection.remoteService.getObtenerTodosPokemon()
-            response.results // "results" es el campo que contiene la lista de Pokémon en PokemonList
+            val response = RemoteConnection.remoteService.getObtenerTodosPokemon(limit, offset)
+            response.results.mapIndexed { index, pokemon ->
+                Pokemon(
+                    id = index + 1 + offset,
+                    name = pokemon.name,
+                    types = emptyList(),
+                    abilities = emptyList(),
+                    sprites = PokemonSprites(
+                        other = OtherSprites(
+                            officialArtwork = OfficialArtwork(frontDefault = "")
+                        )
+                    )
+                )
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
