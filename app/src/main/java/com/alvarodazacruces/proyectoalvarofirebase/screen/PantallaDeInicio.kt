@@ -42,13 +42,11 @@ fun PantallaDeInicio(
                 contentDescription = "Logo",
                 modifier = Modifier.size(200.dp)
             )
-
             Text(
                 text = "Busca tu Pokémon",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
-
             TextField(
                 value = inputText,
                 onValueChange = { inputText = it },
@@ -56,7 +54,6 @@ fun PantallaDeInicio(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-
             if (showError) {
                 Text(
                     text = "¡Debes ingresar un nombre!",
@@ -64,7 +61,6 @@ fun PantallaDeInicio(
                     modifier = Modifier.padding(8.dp)
                 )
             }
-
             Button(
                 onClick = {
                     if (inputText.isBlank()) {
@@ -80,21 +76,24 @@ fun PantallaDeInicio(
             ) {
                 Text("Buscar Pokémon")
             }
-
             when {
                 isLoading -> CircularProgressIndicator() // Muestra un indicador de carga mientras se busca
                 error != null -> Text("Error: $error", color = Color.Red) // Muestra errores si ocurren
                 pokemon != null -> {
                     LaunchedEffect(pokemon) {
                         pokemon?.name?.let { onNavigateToDetail(it) } // Navega a los detalles del Pokémon encontrado
+                        viewModel.clearState() // Limpia el estado después de navegar
                     }
                 }
             }
-
             // Botón para navegar a la lista de Pokémon
             Button(
                 onClick = {
-                    navController.navigate("pokemon_list") // Navegación al destino "pokemon_list"
+                    viewModel.clearState() // Limpia el estado antes de navegar
+                    navController.navigate("pokemon_list") {
+                        // Eliminar todas las rutas anteriores hasta llegar a "pantalla_inicio"
+                        popUpTo("pantalla_inicio") { inclusive = false }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -102,9 +101,7 @@ fun PantallaDeInicio(
             ) {
                 Text("Ver Lista de Pokémon")
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             // Botón para cerrar sesión
             Button(
                 onClick = onLogout, // Llama al manejador de cierre de sesión

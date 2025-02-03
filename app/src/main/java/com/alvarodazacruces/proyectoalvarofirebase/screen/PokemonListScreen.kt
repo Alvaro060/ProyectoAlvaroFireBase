@@ -59,7 +59,6 @@ fun PokemonListScreen(
                     )
                     Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
                 }
-
                 // Mostrar indicador de carga al final de la lista
                 if (isLoading && !isLastPage) {
                     item {
@@ -72,7 +71,6 @@ fun PokemonListScreen(
                     }
                 }
             }
-
             // Detectar cuándo el usuario llega al final de la lista
             LaunchedEffect(Unit) {
                 snapshotFlow { pokemonList.size }

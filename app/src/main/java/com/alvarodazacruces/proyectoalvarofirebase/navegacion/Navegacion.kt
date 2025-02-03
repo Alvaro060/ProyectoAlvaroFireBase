@@ -41,7 +41,6 @@ fun Navegacion(
                 }
             )
         }
-
         composable("signup") {
             SignUpScreen(
                 authViewModel = authViewModel,
@@ -59,7 +58,6 @@ fun Navegacion(
                 }
             )
         }
-
         composable("pantalla_inicio") {
             PantallaDeInicio(
                 viewModel = pokemonSearchViewModel,
@@ -68,21 +66,15 @@ fun Navegacion(
                     navController.navigate("detalle_pokemon/$pokemonId")
                 },
                 onLogout = {
-                    // Lógica de cierre de sesión
                     authViewModel.logout()
-                    pokemonSearchViewModel.clearState()
-
-                    // Limpiar toda la pila de navegación y navegar a "login"
+                    pokemonSearchViewModel.clearState() // Limpia el estado al cerrar sesión
                     navController.popBackStack() // Elimina la ruta actual
                     navController.navigate("login") {
-                        popUpTo(0) {  // Limpia completamente la pila de navegación
-                            inclusive = true
-                        }
+                        popUpTo(0) { inclusive = true } // Limpia completamente la pila de navegación
                     }
                 }
             )
         }
-
         composable("detalle_pokemon/{pokemonId}") { backStackEntry ->
             val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: ""
             DetallePokemonScreen(
@@ -90,7 +82,6 @@ fun Navegacion(
                 navigateToBack = { navController.popBackStack() }
             )
         }
-
         composable("pokemon_list") {
             val pokemonListViewModel: PokemonListViewModel = viewModel()
             PokemonListScreen(
