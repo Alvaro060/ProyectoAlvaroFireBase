@@ -21,7 +21,7 @@ fun LogOutScreen(
         authViewModel.logout()
         // Limpiar el estado del ViewModel
         pokemonSearchViewModel.clearState()
-        // Navegar a la pantalla de inicio de sesión y limpiar la pila
+        // Navegar a la pantalla de inicio de sesión
         navController.navigate("login") {
             popUpTo(navController.graph.startDestinationRoute!!) { inclusive = true }
         }

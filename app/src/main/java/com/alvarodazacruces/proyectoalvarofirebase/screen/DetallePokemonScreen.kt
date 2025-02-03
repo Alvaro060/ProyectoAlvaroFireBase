@@ -49,7 +49,7 @@ fun DetallePokemonScreen(
                     .padding(top = 195.dp) // Margen superior
                     .padding(bottom = 10.dp)
                     .background(Color(rgb(233, 206, 68)), shape = RoundedCornerShape(16.dp))
-                    .padding(10.dp) // Agrega padding para la legibilidad
+                    .padding(10.dp)
             )
 
             // Imagen del Pokémon
@@ -69,7 +69,7 @@ fun DetallePokemonScreen(
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .background(Color(rgb(233, 206, 68)), shape = RoundedCornerShape(16.dp))
-                    .padding(10.dp) // Agrega padding para la legibilidad
+                    .padding(10.dp)
             )
 
             // Habilidades
@@ -79,7 +79,7 @@ fun DetallePokemonScreen(
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .background(Color(rgb(233, 206, 68)), shape = RoundedCornerShape(16.dp))
-                    .padding(10.dp) // Agrega padding para la legibilidad
+                    .padding(10.dp)
             )
         }
     }

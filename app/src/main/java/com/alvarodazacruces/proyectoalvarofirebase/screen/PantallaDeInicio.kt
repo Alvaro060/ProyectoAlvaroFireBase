@@ -16,7 +16,7 @@ import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
 @Composable
 fun PantallaDeInicio(
     viewModel: PokemonSearchViewModel,
-    navController: NavHostController, // Agregamos el parámetro navController
+    navController: NavHostController,
     onNavigateToDetail: (String) -> Unit, // Función para navegar a los detalles del Pokémon
     onLogout: () -> Unit
 ) {

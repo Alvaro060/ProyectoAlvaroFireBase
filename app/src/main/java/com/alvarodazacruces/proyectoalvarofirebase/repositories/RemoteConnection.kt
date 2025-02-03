@@ -22,13 +22,4 @@ object RemoteConnection {
             null
         }
     }
-
-    suspend fun obtenerListaPokemon(): PokemonList? {
-        return try {
-            val response = remoteService.getObtenerTodosPokemon()
-            response
-        } catch (e: Exception) {
-            null
-        }
-    }
 }

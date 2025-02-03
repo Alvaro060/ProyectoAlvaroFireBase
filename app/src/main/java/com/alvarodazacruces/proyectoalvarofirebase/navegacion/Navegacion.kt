@@ -81,7 +81,7 @@ fun Navegacion(
             LogOutScreen(
                 navController = navController,
                 authViewModel = authViewModel,
-                pokemonSearchViewModel = pokemonSearchViewModel // Pasamos el ViewModel aquí
+                pokemonSearchViewModel = pokemonSearchViewModel
             )
         }
 
