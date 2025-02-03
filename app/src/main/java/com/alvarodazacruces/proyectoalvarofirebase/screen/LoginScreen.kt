@@ -37,7 +37,6 @@ fun LoginScreen(
     ) {
         Text("Iniciar Sesión", style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(16.dp))
-
         TextField(
             value = email.value,
             onValueChange = { email.value = it },
@@ -46,7 +45,6 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
-
         TextField(
             value = password.value,
             onValueChange = { password.value = it },
@@ -56,7 +54,6 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = { authViewModel.login(email.value, password.value) },
             modifier = Modifier.fillMaxWidth()
@@ -67,20 +64,15 @@ fun LoginScreen(
                 Text("Iniciar Sesión")
             }
         }
-
         if (error != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = error ?: "", color = MaterialTheme.colorScheme.error)
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         TextButton(onClick = onNavigateToSignUp) {
             Text("¿No tienes una cuenta? Regístrate")
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = onSignInAnonymously,
             modifier = Modifier.fillMaxWidth()

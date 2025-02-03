@@ -9,18 +9,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
 
 @Composable
 fun LogOutScreen(
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    pokemonSearchViewModel: PokemonSearchViewModel
 ) {
-    // Cierra la sesión del usuario
     LaunchedEffect(Unit) {
         authViewModel.logout()
-        // Navega a la pantalla de inicio de sesión
+        // Limpiar el estado del ViewModel
+        pokemonSearchViewModel.clearState()
+        // Navegar a la pantalla de inicio de sesión y limpiar la pila
         navController.navigate("login") {
-            popUpTo("pantalla_inicio") { inclusive = true }
+            popUpTo(navController.graph.startDestinationRoute!!) { inclusive = true }
         }
     }
 

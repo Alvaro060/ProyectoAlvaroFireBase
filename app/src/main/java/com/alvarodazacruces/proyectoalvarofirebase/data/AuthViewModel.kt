@@ -11,12 +11,25 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    // Estado del usuario actual
     private val _user = MutableStateFlow<FirebaseUser?>(auth.currentUser)
     val user: StateFlow<FirebaseUser?> = _user
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
+
+    // Estado de carga (isLoading)
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    // Estado de error
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
+    /**
+     * Función para actualizar el estado del error.
+     */
+    fun updateError(message: String?) {
+        _error.value = message
+    }
 
     /**
      * Inicia sesión con email y password.
@@ -30,9 +43,9 @@ class AuthViewModel : ViewModel() {
                         _isLoading.emit(false)
                         if (task.isSuccessful) {
                             _user.emit(auth.currentUser)
-                            _error.emit(null)
+                            updateError(null) // Limpia cualquier mensaje de error anterior
                         } else {
-                            _error.emit(task.exception?.localizedMessage ?: "Error desconocido al iniciar sesión")
+                            updateError(task.exception?.localizedMessage ?: "Error desconocido al iniciar sesión")
                         }
                     }
                 }
@@ -51,9 +64,9 @@ class AuthViewModel : ViewModel() {
                         _isLoading.emit(false)
                         if (task.isSuccessful) {
                             _user.emit(auth.currentUser)
-                            _error.emit(null)
+                            updateError(null) // Limpia cualquier mensaje de error anterior
                         } else {
-                            _error.emit(task.exception?.localizedMessage ?: "Error desconocido al registrarse")
+                            updateError(task.exception?.localizedMessage ?: "Error desconocido al registrarse")
                         }
                     }
                 }
@@ -67,6 +80,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             auth.signOut()
             _user.emit(null)
+            updateError(null) // Limpia cualquier mensaje de error anterior
         }
     }
 
@@ -82,9 +96,9 @@ class AuthViewModel : ViewModel() {
                         _isLoading.emit(false)
                         if (task.isSuccessful) {
                             _user.emit(auth.currentUser)
-                            _error.emit(null)
+                            updateError(null) // Limpia cualquier mensaje de error anterior
                         } else {
-                            _error.emit(task.exception?.localizedMessage ?: "Error desconocido al iniciar sesión anónima")
+                            updateError(task.exception?.localizedMessage ?: "Error desconocido al iniciar sesión anónima")
                         }
                     }
                 }
@@ -97,10 +111,8 @@ class AuthViewModel : ViewModel() {
     fun signInWithGoogle(idToken: String) {
         viewModelScope.launch {
             _isLoading.emit(true)
-
             // Crear credenciales de Google
             val credential = GoogleAuthProvider.getCredential(idToken, null)
-
             // Iniciar sesión con Firebase
             auth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
@@ -108,9 +120,9 @@ class AuthViewModel : ViewModel() {
                         _isLoading.emit(false)
                         if (task.isSuccessful) {
                             _user.emit(auth.currentUser)
-                            _error.emit(null)
+                            updateError(null) // Limpia cualquier mensaje de error anterior
                         } else {
-                            _error.emit(task.exception?.localizedMessage ?: "Error desconocido al iniciar sesión con Google")
+                            updateError(task.exception?.localizedMessage ?: "Error desconocido al iniciar sesión con Google")
                         }
                     }
                 }

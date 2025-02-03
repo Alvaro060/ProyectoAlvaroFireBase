@@ -1,7 +1,5 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
-import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
 
 @Composable
 fun SignUpScreen(
@@ -23,7 +22,6 @@ fun SignUpScreen(
     val error by authViewModel.error.collectAsState()
     val user by authViewModel.user.collectAsState()
 
-    // Navega al resto de la app si el registro es exitoso.
     LaunchedEffect(user) {
         if (user != null) {
             onSignUpSuccess()
@@ -70,13 +68,7 @@ fun SignUpScreen(
                 if (password.value == confirmPassword.value) {
                     authViewModel.signUp(email.value, password.value)
                 } else {
-                    // Si las contraseñas no coinciden, se puede mostrar un error
-                    // Por simplicidad, aquí se usa el state de error del ViewModel.
-                    // Alternativamente, podrías crear un estado local para este error.
-                    authViewModel.run {
-                        // Actualiza el error (esto es opcional)
-                        // _error.value = "Las contraseñas no coinciden" // No se puede modificar _error directamente desde aquí
-                    }
+                    authViewModel.updateError("Las contraseñas no coinciden")
                 }
             },
             modifier = Modifier.fillMaxWidth()

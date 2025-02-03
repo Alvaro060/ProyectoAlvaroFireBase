@@ -7,13 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonListViewModel
-import com.alvarodazacruces.proyectoalvarofirebase.screen.LoginScreen
-import com.alvarodazacruces.proyectoalvarofirebase.screen.SignUpScreen
-import com.alvarodazacruces.proyectoalvarofirebase.screen.DetallePokemonScreen
-import com.alvarodazacruces.proyectoalvarofirebase.screen.PantallaDeInicio
-import com.alvarodazacruces.proyectoalvarofirebase.screen.LogOutScreen
-import com.alvarodazacruces.proyectoalvarofirebase.screen.PokemonListScreen
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.screen.*
 
 @Composable
 fun Navegacion(
@@ -44,6 +39,7 @@ fun Navegacion(
                 }
             )
         }
+
         composable("signup") {
             SignUpScreen(
                 authViewModel = authViewModel,
@@ -59,10 +55,11 @@ fun Navegacion(
                 }
             )
         }
+
         composable("pantalla_inicio") {
             PantallaDeInicio(
                 viewModel = pokemonSearchViewModel,
-                navController = navController, // Pasa el navController aquí
+                navController = navController,
                 onNavigateToDetail = { pokemonId ->
                     navController.navigate("detalle_pokemon/$pokemonId")
                 },
@@ -71,19 +68,23 @@ fun Navegacion(
                 }
             )
         }
+
         composable("detalle_pokemon/{pokemonId}") { backStackEntry ->
             val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: ""
             DetallePokemonScreen(
                 pokemonId = pokemonId,
-                navigateToBack = { navController.popBackStack() } // Para volver atrás
+                navigateToBack = { navController.popBackStack() }
             )
         }
+
         composable("logout") {
             LogOutScreen(
                 navController = navController,
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                pokemonSearchViewModel = pokemonSearchViewModel // Pasamos el ViewModel aquí
             )
         }
+
         composable("pokemon_list") {
             val pokemonListViewModel: PokemonListViewModel = viewModel()
             PokemonListScreen(
