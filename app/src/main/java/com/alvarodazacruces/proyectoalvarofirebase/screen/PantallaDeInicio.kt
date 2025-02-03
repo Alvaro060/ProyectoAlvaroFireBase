@@ -18,7 +18,7 @@ fun PantallaDeInicio(
     viewModel: PokemonSearchViewModel,
     navController: NavHostController,
     onNavigateToDetail: (String) -> Unit, // Función para navegar a los detalles del Pokémon
-    onLogout: () -> Unit
+    onLogout: () -> Unit // Función para cerrar sesión
 ) {
     val pokemon by viewModel.pokemon.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -42,11 +42,13 @@ fun PantallaDeInicio(
                 contentDescription = "Logo",
                 modifier = Modifier.size(200.dp)
             )
+
             Text(
                 text = "Busca tu Pokémon",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
+
             TextField(
                 value = inputText,
                 onValueChange = { inputText = it },
@@ -54,6 +56,7 @@ fun PantallaDeInicio(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
             if (showError) {
                 Text(
                     text = "¡Debes ingresar un nombre!",
@@ -61,6 +64,7 @@ fun PantallaDeInicio(
                     modifier = Modifier.padding(8.dp)
                 )
             }
+
             Button(
                 onClick = {
                     if (inputText.isBlank()) {
@@ -76,12 +80,13 @@ fun PantallaDeInicio(
             ) {
                 Text("Buscar Pokémon")
             }
+
             when {
-                isLoading -> CircularProgressIndicator()
-                error != null -> Text("Error: $error", color = Color.Red)
+                isLoading -> CircularProgressIndicator() // Muestra un indicador de carga mientras se busca
+                error != null -> Text("Error: $error", color = Color.Red) // Muestra errores si ocurren
                 pokemon != null -> {
                     LaunchedEffect(pokemon) {
-                        pokemon?.name?.let { onNavigateToDetail(it) }
+                        pokemon?.name?.let { onNavigateToDetail(it) } // Navega a los detalles del Pokémon encontrado
                     }
                 }
             }
@@ -102,7 +107,7 @@ fun PantallaDeInicio(
 
             // Botón para cerrar sesión
             Button(
-                onClick = onLogout,
+                onClick = onLogout, // Llama al manejador de cierre de sesión
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)

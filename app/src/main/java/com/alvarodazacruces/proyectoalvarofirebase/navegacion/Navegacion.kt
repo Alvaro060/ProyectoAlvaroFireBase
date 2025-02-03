@@ -25,6 +25,7 @@ fun Navegacion(
                 authViewModel = authViewModel,
                 onLoginSuccess = {
                     navController.navigate("pantalla_inicio") {
+                        // Limpiar todas las rutas anteriores hasta llegar a "login"
                         popUpTo("login") { inclusive = true }
                     }
                 },
@@ -34,6 +35,7 @@ fun Navegacion(
                 onSignInAnonymously = {
                     authViewModel.signInAnonymously()
                     navController.navigate("pantalla_inicio") {
+                        // Limpiar todas las rutas anteriores hasta llegar a "login"
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -45,11 +47,13 @@ fun Navegacion(
                 authViewModel = authViewModel,
                 onSignUpSuccess = {
                     navController.navigate("pantalla_inicio") {
+                        // Limpiar todas las rutas anteriores hasta llegar a "signup"
                         popUpTo("signup") { inclusive = true }
                     }
                 },
                 onNavigateToLogin = {
                     navController.navigate("login") {
+                        // Limpiar todas las rutas anteriores hasta llegar a "signup"
                         popUpTo("signup") { inclusive = true }
                     }
                 }
@@ -64,7 +68,17 @@ fun Navegacion(
                     navController.navigate("detalle_pokemon/$pokemonId")
                 },
                 onLogout = {
-                    navController.navigate("logout")
+                    // Lógica de cierre de sesión
+                    authViewModel.logout()
+                    pokemonSearchViewModel.clearState()
+
+                    // Limpiar toda la pila de navegación y navegar a "login"
+                    navController.popBackStack() // Elimina la ruta actual
+                    navController.navigate("login") {
+                        popUpTo(0) {  // Limpia completamente la pila de navegación
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -74,14 +88,6 @@ fun Navegacion(
             DetallePokemonScreen(
                 pokemonId = pokemonId,
                 navigateToBack = { navController.popBackStack() }
-            )
-        }
-
-        composable("logout") {
-            LogOutScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-                pokemonSearchViewModel = pokemonSearchViewModel
             )
         }
 
