@@ -9,6 +9,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
 
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import java.lang.Runtime.getRuntime
+
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
@@ -37,6 +43,8 @@ fun LoginScreen(
     ) {
         Text("Iniciar Sesión", style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo de Email
         TextField(
             value = email.value,
             onValueChange = { email.value = it },
@@ -45,6 +53,8 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo de Contraseña
         TextField(
             value = password.value,
             onValueChange = { password.value = it },
@@ -54,6 +64,8 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón de Inicio de Sesión
         Button(
             onClick = { authViewModel.login(email.value, password.value) },
             modifier = Modifier.fillMaxWidth()
@@ -64,20 +76,44 @@ fun LoginScreen(
                 Text("Iniciar Sesión")
             }
         }
+
+        // Mostrar Error
         if (error != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = error ?: "", color = MaterialTheme.colorScheme.error)
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para Registrarse
         TextButton(onClick = onNavigateToSignUp) {
             Text("¿No tienes una cuenta? Regístrate")
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para Acceder Anónimamente
         Button(
             onClick = onSignInAnonymously,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Acceder de Forma Anónima")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para Salir de la Aplicación
+        Button(
+            onClick = { exitApp() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Salir de la Aplicación")
+        }
     }
+}
+
+// Función para salir de la aplicación
+private fun exitApp() {
+    getRuntime().exit(1000)
 }
