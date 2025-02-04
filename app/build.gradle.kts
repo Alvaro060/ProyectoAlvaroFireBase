@@ -76,7 +76,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
 
 
-
     implementation("com.google.firebase:firebase-auth:21.0.1")  // Para Firebase Authentication
     implementation("com.google.firebase:firebase-firestore:24.0.0")  // Para Firestore
     implementation("com.google.firebase:firebase-analytics:21.0.0")  // Si usas Analytics
@@ -84,7 +83,7 @@ dependencies {
     // Firebase BoM (Bill of Materials) para mantener las dependencias en versiones compatibles
     implementation(platform("com.google.firebase:firebase-bom:31.0.2"))
 
-
+    implementation ("com.google.android.gms:play-services-auth:20.6.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -29,6 +29,10 @@
         <meta-data
             android:name="firebase_analytics_collection_enabled"
             android:value="true" />
+        <!-- Configuración de Google Sign-In -->
+        <meta-data
+            android:name="com.google.android.gms.auth.api.credentials.CLIENT_ID"
+            android:value="@string/default_web_client_id" />
     </application>
 
 </manifest>
