@@ -87,7 +87,12 @@ fun LoginScreen(
 
         // Enlace para restablecer la contraseña
         TextButton(onClick = {
-            authViewModel.forgotPassword(email.value)
+            if (email.value.isNotEmpty()) {
+                authViewModel.forgotPassword(email.value)
+            } else {
+                // Aquí puedes agregar un mensaje de error o hacer alguna otra acción si el email está vacío
+                authViewModel.updateError("Por favor, ingresa un correo electrónico.")
+            }
         }) {
             Text("¿Has olvidado tu contraseña?")
         }
