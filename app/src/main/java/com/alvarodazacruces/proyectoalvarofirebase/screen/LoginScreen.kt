@@ -85,6 +85,15 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Enlace para restablecer la contraseña
+        TextButton(onClick = {
+            authViewModel.forgotPassword(email.value)
+        }) {
+            Text("¿Has olvidado tu contraseña?")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Botón para Registrarse
         TextButton(onClick = onNavigateToSignUp) {
             Text("¿No tienes una cuenta? Regístrate")

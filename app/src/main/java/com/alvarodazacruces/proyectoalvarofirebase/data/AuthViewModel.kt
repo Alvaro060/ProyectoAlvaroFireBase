@@ -135,4 +135,24 @@ class AuthViewModel : ViewModel() {
                 }
         }
     }
+
+    /**
+     * Envía un correo electrónico de restablecimiento de contraseña al usuario.
+     */
+    fun forgotPassword(email: String) {
+        viewModelScope.launch {
+            _isLoading.emit(true)
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    viewModelScope.launch {
+                        _isLoading.emit(false)
+                        if (task.isSuccessful) {
+                            updateError("Se ha enviado un correo de restablecimiento de contraseña a $email")
+                        } else {
+                            updateError(task.exception?.localizedMessage ?: "Error desconocido al enviar el correo de restablecimiento")
+                        }
+                    }
+                }
+        }
+    }
 }
