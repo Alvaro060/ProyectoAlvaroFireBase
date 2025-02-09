@@ -19,7 +19,7 @@ fun BaseDeDatosPokemonScreen(
     navController: NavHostController,
     onLogout: () -> Unit,
     onNavigateToAddPokemon: () -> Unit,
-    onNavigateToModifyPokemon: () -> Unit,
+    onNavigateToListModifyPokemon: () -> Unit,
     onNavigateToListPokemon: () -> Unit,
     onNavigateToDeletePokemon: () -> Unit,
     viewModel: FirestorePokemonViewModel
@@ -86,7 +86,7 @@ fun BaseDeDatosPokemonScreen(
 
             // Botón de "Modificar Pokémon"
             Button(
-                onClick = onNavigateToModifyPokemon,
+                onClick = onNavigateToListModifyPokemon,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)

@@ -126,8 +126,8 @@ fun Navegacion(
                 onNavigateToAddPokemon = {
                     navController.navigate("add_pokemon_screen")
                 },
-                onNavigateToModifyPokemon = {
-                    navController.navigate("modify_pokemon_screen")
+                onNavigateToListModifyPokemon = {
+                    navController.navigate("lista_modificar_pokemon_screen")
                 },
                 onNavigateToListPokemon = {
                     navController.navigate("pokemon_list_screen")
@@ -145,6 +145,28 @@ fun Navegacion(
                 navController = navController
             )
         }
+        composable("lista_modificar_pokemon_screen") {
+            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
+            ListaModificarPokemonScreen(
+                viewModel = firestoreViewModel,
+                navController = navController
+            )
+        }
+        composable("modify_pokemon_screen/{pokemonId}") { backStackEntry ->
+            // Extraemos el pokemonId de los argumentos de navegación
+            val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: ""
+
+            // Declaramos el ViewModel en el ámbito de este composable
+            val firestorePokemonViewModel: FirestorePokemonViewModel = viewModel()
+
+            // Llamamos a la pantalla de modificación, pasando el ViewModel, el navController y el pokemonId
+            ModificarPokemonScreen(
+                viewModel = firestorePokemonViewModel,
+                navController = navController,
+                pokemonId = pokemonId
+            )
+        }
+
 
 
 

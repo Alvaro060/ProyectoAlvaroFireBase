@@ -24,35 +24,36 @@ class FirestorePokemonViewModel : ViewModel() {
     val error: StateFlow<String?> get() = _error
 
     init {
-        fetchPokemonList() // Inicializa la lista de Pokémon
+        fetchPokemonList() // Inicializa el listener de la lista de Pokémon
     }
 
-    // Método para obtener la lista de Pokémon desde Firestore
+    // Usamos addSnapshotListener para obtener actualizaciones en tiempo real
     private fun fetchPokemonList() {
-        _isLoading.value = true // Se empieza a cargar
-        _error.value = null // Limpiamos cualquier error previo
+        _isLoading.value = true
+        _error.value = null
 
-        pokemonCollection.get()
-            .addOnSuccessListener { result ->
-                val pokemonList = result.mapNotNull { document ->
+        pokemonCollection.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                _error.value = "Error al obtener datos de Firestore: ${error.message}"
+                Log.e("Firestore", "Error al obtener datos de Firestore", error)
+                _isLoading.value = false
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                val pokemonList = snapshot.mapNotNull { document ->
                     try {
                         document.toObject(PokemonBaseDatos::class.java).apply {
-                            id = document.id // Asignamos el id del documento
+                            id = document.id
                         }
                     } catch (e: Exception) {
                         Log.e("Firestore", "Error al mapear documento", e)
-                        null // En caso de error, no agregamos el Pokémon
+                        null
                     }
                 }
-                _pokemonList.value = pokemonList // Actualizamos la lista de Pokémon
+                _pokemonList.value = pokemonList
             }
-            .addOnFailureListener { e ->
-                _error.value = "Error al obtener datos de Firestore: ${e.message}" // Actualizamos el error
-                Log.e("Firestore", "Error al obtener datos de Firestore", e)
-            }
-            .addOnCompleteListener {
-                _isLoading.value = false // Terminamos el proceso de carga
-            }
+            _isLoading.value = false
+        }
     }
 
     // Método para agregar un Pokémon a la base de datos de Firestore
@@ -65,10 +66,10 @@ class FirestorePokemonViewModel : ViewModel() {
         pokemonCollection.add(newPokemon)
             .addOnSuccessListener {
                 Log.d("Firestore", "Pokémon agregado exitosamente")
-                fetchPokemonList() // Actualizamos la lista de Pokémon después de agregarlo
+                // No es necesario llamar a fetchPokemonList() porque el listener se encargará de la actualización
             }
             .addOnFailureListener { e ->
-                _error.value = "Error al agregar Pokémon: ${e.message}" // Actualizamos el error
+                _error.value = "Error al agregar Pokémon: ${e.message}"
                 Log.e("Firestore", "Error al agregar Pokémon", e)
             }
     }
@@ -79,10 +80,10 @@ class FirestorePokemonViewModel : ViewModel() {
             .delete()
             .addOnSuccessListener {
                 Log.d("Firestore", "Pokémon eliminado exitosamente")
-                fetchPokemonList() // Actualizamos la lista de Pokémon después de eliminarlo
+                // El listener actualizará la lista automáticamente
             }
             .addOnFailureListener { e ->
-                _error.value = "Error al eliminar Pokémon: ${e.message}" // Actualizamos el error
+                _error.value = "Error al eliminar Pokémon: ${e.message}"
                 Log.e("Firestore", "Error al eliminar Pokémon", e)
             }
     }
@@ -98,10 +99,10 @@ class FirestorePokemonViewModel : ViewModel() {
             .set(pokemonData)
             .addOnSuccessListener {
                 Log.d("Firestore", "Pokémon actualizado exitosamente")
-                fetchPokemonList() // Actualizamos la lista después de la edición
+                // El listener se encargará de actualizar la lista en tiempo real
             }
             .addOnFailureListener { e ->
-                _error.value = "Error al actualizar Pokémon: ${e.message}" // Actualizamos el error
+                _error.value = "Error al actualizar Pokémon: ${e.message}"
                 Log.e("Firestore", "Error al actualizar Pokémon", e)
             }
     }

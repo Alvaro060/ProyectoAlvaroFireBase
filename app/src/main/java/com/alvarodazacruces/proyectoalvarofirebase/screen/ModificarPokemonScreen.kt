@@ -9,24 +9,25 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
-import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonBaseDatos
 
 @Composable
 fun ModificarPokemonScreen(
     viewModel: FirestorePokemonViewModel,
-    navController: NavController
+    navController: NavController,
+    pokemonId: String
 ) {
-    // Estado para los campos de texto
+    // Estados para los campos de texto
     val name = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
 
-    // Obtenemos el primer Pokémon disponible desde el ViewModel
-    val pokemon = viewModel.pokemonList.collectAsState().value.firstOrNull()
+    // Buscamos el Pokémon cuyo id coincida con el pokemonId recibido
+    val pokemon = viewModel.pokemonList.collectAsState().value.firstOrNull { it.id == pokemonId }
 
-    // Aseguramos que los datos del Pokémon estén cargados
+    // Actualizamos los valores de los campos si se encuentra el Pokémon
     LaunchedEffect(pokemon) {
         pokemon?.let {
             name.value = it.name
@@ -34,17 +35,20 @@ fun ModificarPokemonScreen(
         }
     }
 
-    // Column para los elementos de la UI
+    // Obtenemos el contexto para mostrar Toasts
+    val context = LocalContext.current
+
+    // UI de la pantalla
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Título
+        // Título de la pantalla
         Text(text = "Modificar Pokémon")
 
-        // Verificamos si existe un Pokémon cargado
+        // Verificamos si el Pokémon existe
         if (pokemon != null) {
             // Mostramos el ID del Pokémon
             Text(text = "ID: ${pokemon.id}", style = MaterialTheme.typography.titleMedium)
@@ -65,23 +69,22 @@ fun ModificarPokemonScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para modificar el Pokémon
+            // Botón para actualizar el Pokémon
             Button(
                 onClick = {
                     if (name.value.isNotEmpty() && type.value.isNotEmpty()) {
-                        // Modificamos el Pokémon utilizando su ID
                         viewModel.updatePokemon(pokemon.id, name.value, type.value)
-                        navController.popBackStack() // Navegar hacia atrás después de la modificación
+                        navController.popBackStack()
                     } else {
-                        Toast.makeText(navController.context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
                     }
                 }
             ) {
                 Text(text = "Modificar Pokémon")
             }
         } else {
-            // Si no hay Pokémon cargado, mostramos un mensaje
-            Text(text = "No hay Pokémon disponibles para modificar.")
+            // Si no se encuentra el Pokémon, se muestra un mensaje
+            Text(text = "No se encontró el Pokémon con el ID especificado.")
         }
     }
 }
