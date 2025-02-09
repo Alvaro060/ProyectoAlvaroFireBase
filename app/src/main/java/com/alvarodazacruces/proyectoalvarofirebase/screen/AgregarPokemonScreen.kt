@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
 
@@ -30,14 +29,17 @@ fun AgregarPokemonScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Título
         Text(text = "Agregar Nuevo Pokémon")
 
+        // Campo para el nombre
         TextField(
             value = name.value,
             onValueChange = { name.value = it },
             label = { Text("Nombre") }
         )
 
+        // Campo para el tipo
         TextField(
             value = type.value,
             onValueChange = { type.value = it },
@@ -46,11 +48,12 @@ fun AgregarPokemonScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Botón para agregar Pokémon
         Button(
             onClick = {
                 if (name.value.isNotEmpty() && type.value.isNotEmpty()) {
                     viewModel.addPokemon(name.value, type.value)
-                    navController.popBackStack() // Regresar a la pantalla anterior
+                    navController.popBackStack() // Navega hacia atrás después de agregar
                 } else {
                     Toast.makeText(navController.context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
                 }

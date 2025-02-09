@@ -1,5 +1,6 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +28,15 @@ fun BaseDeDatosPokemonScreen(
     val pokemonList by viewModel.pokemonList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    // Interceptar el evento de retroceso del dispositivo
+    BackHandler {
+        // Redirige al menú cuando el botón de retroceso es presionado
+        navController.navigate("menu") {
+            // Limpiar la pila de navegación para evitar que el usuario regrese a la pantalla de BaseDeDatosPokemonScreen
+            popUpTo("menu") { inclusive = true }
+        }
+    }
 
     // Layout principal
     Box(

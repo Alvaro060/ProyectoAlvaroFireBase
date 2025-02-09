@@ -138,6 +138,14 @@ fun Navegacion(
                 viewModel = firestoreViewModel // Pasamos el ViewModel
             )
         }
+        composable("add_pokemon_screen") {
+            val firestoreViewModel: FirestorePokemonViewModel = viewModel() // Obtenemos el ViewModel
+            AgregarPokemonScreen(
+                viewModel = firestoreViewModel, // Pasamos el ViewModel a la pantalla
+                navController = navController
+            )
+        }
+
 
 
 
