@@ -64,11 +64,6 @@ fun BaseDeDatosPokemonScreen(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Indicador de carga
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(vertical = 16.dp))
-            }
-
             // Mostrar error si existe
             error?.let {
                 Text(

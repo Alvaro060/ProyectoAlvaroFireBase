@@ -1,5 +1,6 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,14 @@ fun PantallaDeInicio(
     val isLoading by viewModel.isLoading.collectAsState()
     var inputText by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+
+    // Manejo del botón de retroceso
+    BackHandler {
+        navController.navigate("menu") {
+            // Aseguramos que la pantalla de inicio sea la única en el stack
+            popUpTo("menu") { inclusive = true }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
