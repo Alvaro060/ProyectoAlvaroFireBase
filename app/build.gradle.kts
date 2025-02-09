@@ -85,6 +85,8 @@ dependencies {
 
     implementation ("com.google.android.gms:play-services-auth:20.6.0")
 
+    implementation(libs.firebase.firestore)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

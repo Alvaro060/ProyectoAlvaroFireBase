@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonListViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.screen.*
@@ -27,7 +28,7 @@ fun Navegacion(
     // Verificar el estado de autenticación al inicio
     LaunchedEffect(Unit) {
         if (authViewModel.isSignedIn()) {
-            startDestination = "pantalla_inicio"
+            startDestination = "menu"
         } else {
             startDestination = "login"
         }
@@ -41,7 +42,7 @@ fun Navegacion(
             LoginScreen(
                 authViewModel = authViewModel,
                 onLoginSuccess = {
-                    navController.navigate("pantalla_inicio") {
+                    navController.navigate("menu") {
                         popUpTo("login") { inclusive = true }
                     }
                 },
@@ -50,7 +51,7 @@ fun Navegacion(
                 },
                 onSignInAnonymously = {
                     authViewModel.signInAnonymously()
-                    navController.navigate("pantalla_inicio") {
+                    navController.navigate("menu") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -60,7 +61,7 @@ fun Navegacion(
             SignUpScreen(
                 authViewModel = authViewModel,
                 onSignUpSuccess = {
-                    navController.navigate("pantalla_inicio") {
+                    navController.navigate("menu") {
                         popUpTo("signup") { inclusive = true }
                     }
                 },
@@ -70,6 +71,9 @@ fun Navegacion(
                     }
                 }
             )
+        }
+        composable("menu") {
+            MenuScreen(navController = navController)
         }
         composable("pantalla_inicio") {
             PantallaDeInicio(
@@ -104,5 +108,38 @@ fun Navegacion(
                 }
             )
         }
+        composable("base_de_datos_pokemon_screen") {
+            // Aquí obtenemos el ViewModel de Firestore para esta pantalla
+            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
+
+            // Pasamos las funciones de navegación como parámetros a la pantalla
+            BaseDeDatosPokemonScreen(
+                navController = navController,
+                onLogout = {
+                    authViewModel.logout()
+                    pokemonSearchViewModel.clearState()
+                    navController.popBackStack()
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToAddPokemon = {
+                    navController.navigate("add_pokemon_screen")
+                },
+                onNavigateToModifyPokemon = {
+                    navController.navigate("modify_pokemon_screen")
+                },
+                onNavigateToListPokemon = {
+                    navController.navigate("pokemon_list_screen")
+                },
+                onNavigateToDeletePokemon = {
+                    navController.navigate("delete_pokemon_screen")
+                },
+                viewModel = firestoreViewModel // Pasamos el ViewModel
+            )
+        }
+
+
+
     }
 }
