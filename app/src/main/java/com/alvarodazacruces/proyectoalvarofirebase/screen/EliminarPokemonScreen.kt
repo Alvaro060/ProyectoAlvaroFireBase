@@ -1,59 +1,138 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonBaseDatos
 
 @Composable
 fun EliminarPokemonScreen(
     viewModel: FirestorePokemonViewModel,
     navController: NavController
 ) {
-    var pokemonId by remember { mutableStateOf("") }
+    // Obtenemos la lista de Pokémon en tiempo real
+    val pokemonList = viewModel.pokemonList.collectAsState().value
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Eliminar Pokémon")
+    // Estado para el filtro de búsqueda
+    var searchQuery by remember { mutableStateOf("") }
 
-        OutlinedTextField(
-            value = pokemonId,
-            onValueChange = { pokemonId = it },
-            label = { Text("ID del Pokémon") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+    // Filtramos los Pokémon según el nombre (sin importar mayúsculas o minúsculas)
+    val filteredPokemonList = pokemonList.filter { pokemon ->
+        pokemon.name.lowercase().contains(searchQuery.lowercase())
+    }
+
+    // Estado para controlar la visibilidad del AlertDialog
+    var showDialog by remember { mutableStateOf(false) }
+    var pokemonToDelete by remember { mutableStateOf<PokemonBaseDatos?>(null) }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // Campo de búsqueda
+        TextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Buscar Pokémon") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
 
-        Button(
-            onClick = {
-                if (pokemonId.isNotEmpty()) {
-                    viewModel.deletePokemon(pokemonId)
-                    navController.popBackStack() // Volver a la pantalla anterior
-                } else {
-                    Toast.makeText(
-                        navController.context,
-                        "Por favor ingresa el ID del Pokémon",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Si la lista filtrada está vacía, mostramos un mensaje
+        if (filteredPokemonList.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "No se encontraron Pokémon con ese nombre.")
+            }
+        } else {
+            // Lista de Pokémon filtrados
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                items(filteredPokemonList) { pokemon ->
+                    // Card clicable para eliminar
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                pokemonToDelete = pokemon
+                                showDialog = true
+                            },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Cargamos la imagen del Pokémon utilizando Coil
+                            AsyncImage(
+                                model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
+                                contentDescription = "Imagen de ${pokemon.name}",
+                                modifier = Modifier.size(80.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = "ID: ${pokemon.id}",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = "Nombre: ${pokemon.name}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "Tipo: ${pokemon.type}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+                    }
                 }
             }
-        ) {
-            Text(text = "Eliminar Pokémon")
         }
+    }
+
+    // Mostrar el AlertDialog de confirmación
+    if (showDialog && pokemonToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmar eliminación") },
+            text = { Text("¿Estás seguro de que deseas eliminar a ${pokemonToDelete?.name}?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // Lógica para eliminar el Pokémon
+                        pokemonToDelete?.let { pokemon ->
+                            viewModel.deletePokemon(pokemon)  // Asegúrate que esta función elimina el Pokémon
+                            showDialog = false
+                            Toast.makeText(navController.context, "Pokémon eliminado", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text("No")
+                }
+            }
+        )
     }
 }

@@ -75,17 +75,18 @@ class FirestorePokemonViewModel : ViewModel() {
     }
 
     // Método para eliminar un Pokémon de Firestore
-    fun deletePokemon(pokemonId: String) {
-        pokemonCollection.document(pokemonId)
-            .delete()
-            .addOnSuccessListener {
-                Log.d("Firestore", "Pokémon eliminado exitosamente")
-                // El listener actualizará la lista automáticamente
-            }
-            .addOnFailureListener { e ->
-                _error.value = "Error al eliminar Pokémon: ${e.message}"
-                Log.e("Firestore", "Error al eliminar Pokémon", e)
-            }
+    fun deletePokemon(pokemon: PokemonBaseDatos) {
+        if (pokemon.id.isNotEmpty()) {
+            pokemonCollection.document(pokemon.id).delete()
+                .addOnSuccessListener {
+                    Log.d("FirestorePokemon", "Pokémon eliminado correctamente")
+                    // Recargar la lista de Pokémon después de la eliminación
+                    fetchPokemonList()
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("FirestorePokemon", "Error al eliminar el Pokémon", exception)
+                }
+        }
     }
 
     // Método para actualizar los detalles de un Pokémon en Firestore
