@@ -2,13 +2,17 @@ package com.alvarodazacruces.proyectoalvarofirebase.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
 import kotlinx.coroutines.Dispatchers
@@ -67,64 +71,92 @@ fun AgregarPokemonScreen(
     navController: NavController
 ) {
     // Estados para los campos de texto
-    var name = remember { mutableStateOf("") }
-    var type = remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
 
     // Scope para lanzar corrutinas desde Compose
     val coroutineScope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        // Título
-        Text(text = "Agregar Nuevo Pokémon")
-
-        // Campo para ingresar el nombre
-        TextField(
-            value = name.value,
-            onValueChange = { name.value = it },
-            label = { Text("Nombre") }
-        )
-
-        // Campo para ingresar el tipo
-        TextField(
-            value = type.value,
-            onValueChange = { type.value = it },
-            label = { Text("Tipo") }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para agregar Pokémon
-        Button(
-            onClick = {
-                if (name.value.isNotEmpty() && type.value.isNotEmpty()) {
-                    coroutineScope.launch {
-                        val isValid = validatePokemonAgregar(name.value, type.value)
-                        if (isValid) {
-                            viewModel.addPokemon(name.value, type.value)
-                            navController.popBackStack() // Navega hacia atrás después de agregar
-                        } else {
-                            Toast.makeText(
-                                navController.context,
-                                "El nombre del Pokémon o el tipo son incorrectos",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } else {
-                    Toast.makeText(
-                        navController.context,
-                        "Por favor, complete todos los campos",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Agregar Pokémon")
+            // Título
+            Text(
+                text = "Agregar Nuevo Pokémon",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Campo para ingresar el nombre
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Campo para ingresar el tipo
+            TextField(
+                value = type,
+                onValueChange = { type = it },
+                label = { Text("Tipo") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón para agregar Pokémon
+            Button(
+                onClick = {
+                    if (name.isNotEmpty() && type.isNotEmpty()) {
+                        coroutineScope.launch {
+                            val isValid = validatePokemonAgregar(name, type)
+                            if (isValid) {
+                                viewModel.addPokemon(name, type)
+                                navController.popBackStack() // Navega hacia atrás después de agregar
+                            } else {
+                                Toast.makeText(
+                                    navController.context,
+                                    "El nombre del Pokémon o el tipo son incorrectos",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(
+                            navController.context,
+                            "Por favor, complete todos los campos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Agregar Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
         }
     }
 }

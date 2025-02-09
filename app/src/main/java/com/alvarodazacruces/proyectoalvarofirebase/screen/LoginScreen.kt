@@ -8,11 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import java.lang.Runtime.getRuntime
 
 @Composable
@@ -37,22 +39,33 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp), // Padding ajustado para mayor espacio
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Iniciar Sesión", style = MaterialTheme.typography.headlineLarge)
-        Spacer(modifier = Modifier.height(16.dp))
+        // Título de la pantalla
+        Text(
+            text = "Iniciar Sesión",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
 
         // Campo de Email
         TextField(
             value = email.value,
             onValueChange = { email.value = it },
-            label = { Text("Email") },
+            label = { Text("Correo Electrónico") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = error != null
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp)) // Espacio ajustado
 
         // Campo de Contraseña
         TextField(
@@ -61,73 +74,71 @@ fun LoginScreen(
             label = { Text("Contraseña") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = error != null
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp)) // Espacio ajustado
 
         // Botón de Inicio de Sesión
         Button(
             onClick = { authViewModel.login(email.value, password.value) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = email.value.isNotEmpty() && password.value.isNotEmpty() && !isLoading,
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             if (isLoading) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(20.dp))
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(20.dp)
+                )
             } else {
                 Text("Iniciar Sesión")
             }
         }
 
-        // Mostrar Error
+        // Mostrar Error si es necesario
         if (error != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = error ?: "", color = MaterialTheme.colorScheme.error)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp)) // Espacio ajustado
 
         // Enlace para restablecer la contraseña
         TextButton(onClick = {
             if (email.value.isNotEmpty()) {
                 authViewModel.forgotPassword(email.value)
             } else {
-                // Aquí puedes agregar un mensaje de error o hacer alguna otra acción si el email está vacío
                 authViewModel.updateError("Por favor, ingresa un correo electrónico.")
             }
         }) {
-            Text("¿Has olvidado tu contraseña?")
+            Text(
+                text = "¿Has olvidado tu contraseña?",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp)) // Espacio ajustado
 
         // Botón para Registrarse
         TextButton(onClick = onNavigateToSignUp) {
-            Text("¿No tienes una cuenta? Regístrate")
+            Text(
+                text = "¿No tienes una cuenta? Regístrate",
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp)) // Espacio ajustado
 
         // Botón para Acceder Anónimamente
         Button(
             onClick = onSignInAnonymously,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Acceder de Forma Anónima")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para Salir de la Aplicación
-        Button(
-            onClick = { exitApp() },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Salir de la Aplicación")
         }
     }
 }
 
-// Función para salir de la aplicación
-private fun exitApp() {
-    getRuntime().exit(1000)
-}

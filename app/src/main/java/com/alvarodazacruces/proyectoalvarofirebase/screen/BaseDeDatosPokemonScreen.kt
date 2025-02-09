@@ -9,7 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import androidx.navigation.NavHostController
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
@@ -46,9 +48,10 @@ fun BaseDeDatosPokemonScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 195.dp, bottom = 10.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp), // Añadido un padding horizontal para centrar el contenido
+            verticalArrangement = Arrangement.Center, // Centra los elementos verticalmente
+            horizontalAlignment = Alignment.CenterHorizontally // Centra los elementos horizontalmente
         ) {
             // Imagen de encabezado
             AsyncImage(
@@ -60,8 +63,14 @@ fun BaseDeDatosPokemonScreen(
             // Título
             Text(
                 text = "Base De Datos Pokémons",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 16.dp)
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
 
             // Mostrar error si existe
@@ -81,7 +90,13 @@ fun BaseDeDatosPokemonScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text("Agregar Pokémon")
+                Text(
+                    "Agregar Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
 
             // Botón de "Modificar Pokémon"
@@ -91,7 +106,13 @@ fun BaseDeDatosPokemonScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text("Modificar Pokémon")
+                Text(
+                    "Modificar Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
 
             // Botón de "Ver Lista de Pokémon"
@@ -101,7 +122,13 @@ fun BaseDeDatosPokemonScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text("Ver Lista de Pokémon")
+                Text(
+                    "Ver Lista de Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
 
             // Botón de "Eliminar Pokémon"
@@ -111,7 +138,13 @@ fun BaseDeDatosPokemonScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text("Eliminar Pokémon")
+                Text(
+                    "Eliminar Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -123,7 +156,13 @@ fun BaseDeDatosPokemonScreen(
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
             ) {
-                Text("Cerrar Sesión")
+                Text(
+                    "Cerrar Sesión",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
         }
     }

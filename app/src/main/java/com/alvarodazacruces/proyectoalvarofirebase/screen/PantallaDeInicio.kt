@@ -9,7 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import androidx.navigation.NavHostController
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
@@ -53,8 +55,14 @@ fun PantallaDeInicio(
             )
             Text(
                 text = "Busca tu Pokémon",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 16.dp)
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             TextField(
                 value = inputText,
@@ -83,7 +91,13 @@ fun PantallaDeInicio(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                Text("Buscar Pokémon")
+                Text(
+                    "Buscar Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
             when {
                 isLoading -> CircularProgressIndicator() // Muestra un indicador de carga mientras se busca
@@ -108,7 +122,13 @@ fun PantallaDeInicio(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                Text("Ver Lista de Pokémon")
+                Text(
+                    "Ver Lista de Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             // Botón para cerrar sesión
@@ -118,7 +138,13 @@ fun PantallaDeInicio(
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
             ) {
-                Text("Cerrar Sesión")
+                Text(
+                    "Cerrar Sesión",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
         }
     }
