@@ -1,6 +1,6 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
-import androidx.compose.foundation.clickable
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +14,7 @@ import coil.compose.AsyncImage
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
 
 @Composable
-fun ListaModificarPokemonScreen(
+fun VerListaPokemonScreen(
     viewModel: FirestorePokemonViewModel,
     navController: NavController
 ) {
@@ -60,18 +60,14 @@ fun ListaModificarPokemonScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .clickable {
-                                // Navegamos a la pantalla de modificación pasando el id del Pokémon
-                                navController.navigate("modify_pokemon_screen/${pokemon.id}")
-                            },
+                            .padding(vertical = 8.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Usamos AsyncImage de Coil para cargar la imagen desde la API
+                            // Cargamos la imagen del Pokémon utilizando Coil
                             AsyncImage(
                                 model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
                                 contentDescription = "Imagen de ${pokemon.name}",

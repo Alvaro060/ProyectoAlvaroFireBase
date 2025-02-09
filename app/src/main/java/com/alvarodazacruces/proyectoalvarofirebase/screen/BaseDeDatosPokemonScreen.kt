@@ -20,8 +20,8 @@ fun BaseDeDatosPokemonScreen(
     onLogout: () -> Unit,
     onNavigateToAddPokemon: () -> Unit,
     onNavigateToListModifyPokemon: () -> Unit,
-    onNavigateToListPokemon: () -> Unit,
     onNavigateToDeletePokemon: () -> Unit,
+    onNavigateToVerListaPokemon: () -> Unit,
     viewModel: FirestorePokemonViewModel
 ) {
     // Estado de la UI
@@ -96,7 +96,7 @@ fun BaseDeDatosPokemonScreen(
 
             // Botón de "Ver Lista de Pokémon"
             Button(
-                onClick = onNavigateToListPokemon,
+                onClick = onNavigateToVerListaPokemon,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)

@@ -129,8 +129,8 @@ fun Navegacion(
                 onNavigateToListModifyPokemon = {
                     navController.navigate("lista_modificar_pokemon_screen")
                 },
-                onNavigateToListPokemon = {
-                    navController.navigate("pokemon_list_screen")
+                onNavigateToVerListaPokemon = {
+                    navController.navigate("ver_lista_pokemon_screen")
                 },
                 onNavigateToDeletePokemon = {
                     navController.navigate("delete_pokemon_screen")
@@ -166,7 +166,13 @@ fun Navegacion(
                 pokemonId = pokemonId
             )
         }
-
+        composable("ver_lista_pokemon_screen") {
+            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
+            VerListaPokemonScreen(
+                viewModel = firestoreViewModel,
+                navController = navController
+            )
+        }
 
 
 
