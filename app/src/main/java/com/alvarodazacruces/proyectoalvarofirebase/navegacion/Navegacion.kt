@@ -73,8 +73,19 @@ fun Navegacion(
             )
         }
         composable("menu") {
-            MenuScreen(navController = navController)
+            MenuScreen(
+                navController = navController,
+                onLogout = {
+                    authViewModel.logout()
+                    pokemonSearchViewModel.clearState()
+                    navController.popBackStack()
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
+
         composable("pantalla_inicio") {
             PantallaDeInicio(
                 viewModel = pokemonSearchViewModel,

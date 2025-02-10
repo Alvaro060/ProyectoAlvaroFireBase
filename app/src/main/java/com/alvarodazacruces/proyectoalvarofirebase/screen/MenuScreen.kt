@@ -14,7 +14,8 @@ import androidx.navigation.NavHostController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    onLogout: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -82,6 +83,22 @@ fun MenuScreen(
             ) {
                 Text(
                     "Base De Datos Pokémon",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            // Botón de "Cerrar Sesión"
+            Button(
+                onClick = onLogout,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    "Cerrar Sesión",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold

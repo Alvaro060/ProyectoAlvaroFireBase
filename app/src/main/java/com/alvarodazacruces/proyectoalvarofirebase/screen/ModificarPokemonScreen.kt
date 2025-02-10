@@ -2,6 +2,8 @@ package com.alvarodazacruces.proyectoalvarofirebase.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -10,7 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
 import kotlinx.coroutines.Dispatchers
@@ -70,8 +75,8 @@ fun ModificarPokemonScreen(
     pokemonId: String
 ) {
     // Estados para los campos de texto
-    val name = remember { mutableStateOf("") }
-    val type = remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
 
     // Buscamos el Pokémon cuyo id coincida con el pokemonId recibido
     val pokemon = viewModel.pokemonList.collectAsState().value.firstOrNull { it.id == pokemonId }
@@ -79,76 +84,95 @@ fun ModificarPokemonScreen(
     // Actualizamos los valores de los campos si se encuentra el Pokémon
     LaunchedEffect(pokemon) {
         pokemon?.let {
-            name.value = it.name
-            type.value = it.type
+            name = it.name
+            type = it.type
         }
     }
 
-    // Obtenemos el contexto para mostrar Toasts
     val context = LocalContext.current
-
-    // Scope para lanzar corrutinas desde Compose
     val coroutineScope = rememberCoroutineScope()
 
-    // UI de la pantalla
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        // Título de la pantalla
-        Text(text = "Modificar Pokémon")
-
-        // Verificamos si el Pokémon existe
-        if (pokemon != null) {
-            // Mostramos el ID del Pokémon
-            Text(text = "ID: ${pokemon.id}", style = MaterialTheme.typography.titleMedium)
-
-            // Campo para el nombre
-            TextField(
-                value = name.value,
-                onValueChange = { name.value = it },
-                label = { Text("Nombre") }
-            )
-
-            // Campo para el tipo
-            TextField(
-                value = type.value,
-                onValueChange = { type.value = it },
-                label = { Text("Tipo") }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Modificar Pokémon",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para actualizar el Pokémon
-            Button(
-                onClick = {
-                    if (name.value.isNotEmpty() && type.value.isNotEmpty()) {
-                        // Se lanza una corrutina para validar los datos mediante la PokeAPI
-                        coroutineScope.launch {
-                            val isValid = validatePokemonModificar(name.value, type.value)
-                            if (isValid) {
-                                viewModel.updatePokemon(pokemon.id, name.value, type.value)
+            if (pokemon != null) {
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = type,
+                    onValueChange = { type = it },
+                    label = { Text("Tipo") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (name.isNotEmpty() && type.isNotEmpty()) {
+                            coroutineScope.launch {
+                                viewModel.updatePokemon(pokemon.id, name, type)
                                 navController.popBackStack()
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "El nombre del Pokémon o el tipo son incorrectos",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Por favor, complete todos los campos",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    } else {
-                        Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Actualizar Pokémon",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
                 }
-            ) {
-                Text(text = "Modificar Pokémon")
+            } else {
+                Text(
+                    text = "Pokémon no encontrado",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
-        } else {
-            // Si no se encuentra el Pokémon, se muestra un mensaje
-            Text(text = "No se encontró el Pokémon con el ID especificado.")
         }
     }
 }
+
