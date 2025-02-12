@@ -10,6 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +48,12 @@ fun MenuScreen(
                     .fillMaxWidth()
                     .padding(bottom = 32.dp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            // Imagen de encabezado
+            AsyncImage(
+                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png",
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp)
             )
             Button(
                 onClick = {

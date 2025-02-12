@@ -55,7 +55,7 @@ fun BaseDeDatosPokemonScreen(
         ) {
             // Imagen de encabezado
             AsyncImage(
-                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
                 contentDescription = "Logo",
                 modifier = Modifier.size(200.dp)
             )
