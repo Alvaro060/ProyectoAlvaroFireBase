@@ -1,21 +1,28 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.lang.Runtime.getRuntime
+import com.alvarodazacruces.proyectoalvarofirebase.R
+import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun LoginScreen(
@@ -24,26 +31,59 @@ fun LoginScreen(
     onNavigateToSignUp: () -> Unit,
     onSignInAnonymously: () -> Unit,
 ) {
+    // Estados para email y contraseña
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
+
     val isLoading by authViewModel.isLoading.collectAsState()
     val error by authViewModel.error.collectAsState()
     val user by authViewModel.user.collectAsState()
 
+    // Navegar al siguiente destino si el usuario ya está autenticado
     LaunchedEffect(user) {
         if (user != null) {
             onLoginSuccess()
         }
     }
 
+    // Obtener el contexto actual para crear el cliente de Google Sign-In
+    val context = LocalContext.current
+
+    // Configurar Google Sign-In
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
+    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+    // Lanzador para el resultado del intent de Google Sign-In
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                account?.idToken?.let { idToken ->
+                    authViewModel.signInWithGoogle(idToken)
+                } ?: run {
+                    authViewModel.updateError("Error al obtener el token de Google")
+                }
+            } catch (e: ApiException) {
+                authViewModel.updateError("Error en Google Sign-In: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    // Diseño de la pantalla de login
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp), // Padding ajustado para mayor espacio
+            .padding(24.dp), // Espacio para toda la pantalla
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Título de la pantalla
+        // Título
         Text(
             text = "Iniciar Sesión",
             style = MaterialTheme.typography.headlineMedium.copy(
@@ -53,10 +93,10 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 32.dp),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
 
-        // Campo de Email
+        // Campo de correo electrónico
         TextField(
             value = email.value,
             onValueChange = { email.value = it },
@@ -65,9 +105,9 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             isError = error != null
         )
-        Spacer(modifier = Modifier.height(16.dp)) // Espacio ajustado
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo de Contraseña
+        // Campo de contraseña
         TextField(
             value = password.value,
             onValueChange = { password.value = it },
@@ -77,9 +117,9 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             isError = error != null
         )
-        Spacer(modifier = Modifier.height(24.dp)) // Espacio ajustado
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón de Inicio de Sesión
+        // Botón para iniciar sesión con email y contraseña
         Button(
             onClick = { authViewModel.login(email.value, password.value) },
             modifier = Modifier.fillMaxWidth(),
@@ -96,15 +136,15 @@ fun LoginScreen(
             }
         }
 
-        // Mostrar Error si es necesario
+        // Mostrar error si lo hay
         if (error != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = error ?: "", color = MaterialTheme.colorScheme.error)
         }
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espacio ajustado
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Enlace para restablecer la contraseña
+        // Enlace para restablecer contraseña
         TextButton(onClick = {
             if (email.value.isNotEmpty()) {
                 authViewModel.forgotPassword(email.value)
@@ -120,9 +160,9 @@ fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp)) // Espacio ajustado
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón para Registrarse
+        // Enlace para ir a la pantalla de registro
         TextButton(onClick = onNavigateToSignUp) {
             Text(
                 text = "¿No tienes una cuenta? Regístrate",
@@ -130,15 +170,45 @@ fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espacio ajustado
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para Acceder Anónimamente
+        // Botón para acceder de forma anónima
         Button(
             onClick = onSignInAnonymously,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Acceder de Forma Anónima")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // --- Botón para Iniciar Sesión con Google ---
+        Button(
+            onClick = {
+                googleSignInClient.signOut().addOnCompleteListener {
+                    val signInIntent = googleSignInClient.signInIntent
+                    launcher.launch(signInIntent)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(horizontal = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            shape = RoundedCornerShape(8.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_google),
+                contentDescription = "Logo de Google",
+                modifier = Modifier.size(84.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "Iniciar sesión con Google",
+                color = Color.Black,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
-
