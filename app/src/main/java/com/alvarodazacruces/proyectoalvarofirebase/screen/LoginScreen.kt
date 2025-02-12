@@ -192,8 +192,7 @@ fun LoginScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
-                .padding(horizontal = 16.dp),
+                .height(48.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = RoundedCornerShape(8.dp),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
@@ -203,7 +202,6 @@ fun LoginScreen(
                 contentDescription = "Logo de Google",
                 modifier = Modifier.size(84.dp)
             )
-            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "Iniciar sesión con Google",
                 color = Color.Black,
