@@ -1,11 +1,12 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
-import androidx.compose.foundation.background
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -14,61 +15,61 @@ import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuScreen(
+fun PantallaDeInicioBaseDeDatos(
     navController: NavHostController,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToPokemons: () -> Unit,
+    onNavigateToEntrenadores: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("")
-                },
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primary)
-            )
+
+    BackHandler {
+        // Redirige al menú cuando el botón de retroceso es presionado
+        navController.navigate("menu") {
+            // Limpiar la pila de navegación para evitar que el usuario regrese a la pantalla de BaseDeDatosPokemonScreen
+            popUpTo("menu") { inclusive = true }
         }
-    ) { paddingValues ->
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Imagen de encabezado
+            AsyncImage(
+                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp)
+            )
+
+            // Título
             Text(
-                text = "Menú Principal",
+                text = "Base de Datos",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
-                    color = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
-            // Imagen de encabezado
-            AsyncImage(
-                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png",
-                contentDescription = "Logo",
-                modifier = Modifier.size(200.dp)
-            )
+
+            // Botón de "Pokémons"
             Button(
-                onClick = {
-                    // Navega a la pantalla de la API (PantallaDeInicio)
-                    navController.navigate("pantalla_inicio") {
-                        popUpTo("menu") { inclusive = true }
-                    }
-                },
+                onClick = onNavigateToPokemons,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium
+                    .padding(vertical = 8.dp)
             ) {
                 Text(
-                    "Api Pokémon",
+                    "Pokémons",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
@@ -76,33 +77,28 @@ fun MenuScreen(
                 )
             }
 
+            // Botón de "Entrenadores"
             Button(
-                onClick = {
-                    // Navega a la pantalla de inicio de base de datos
-                    navController.navigate("pantalla_inicio_base_de_datos") {
-                        popUpTo("menu") { inclusive = true }
-                    }
-                },
+                onClick = onNavigateToEntrenadores,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium
+                    .padding(vertical = 8.dp)
             ) {
                 Text(
-                    "Base De Datos Pokémon",
+                    "Entrenadores",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 )
             }
+
             // Botón de "Cerrar Sesión"
             Button(
                 onClick = onLogout,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium
+                    .padding(vertical = 8.dp)
             ) {
                 Text(
                     "Cerrar Sesión",
@@ -112,6 +108,7 @@ fun MenuScreen(
                     )
                 )
             }
+
         }
     }
 }

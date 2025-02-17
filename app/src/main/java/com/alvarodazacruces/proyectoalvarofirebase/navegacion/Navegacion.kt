@@ -119,6 +119,31 @@ fun Navegacion(
                 }
             )
         }
+
+        //Base De Datos
+
+        composable("pantalla_inicio_base_de_datos") {
+            PantallaDeInicioBaseDeDatos(
+                navController = navController,
+                onLogout = {
+                    authViewModel.logout()
+                    pokemonSearchViewModel.clearState()
+                    navController.popBackStack()
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToPokemons = {
+                    // Navega a la pantalla de la base de datos de Pokemon
+                    navController.navigate("base_de_datos_pokemon_screen")
+                },
+                onNavigateToEntrenadores = {
+                    // Navega a la pantalla de la base de datos de Entrenadores
+                    navController.navigate("base_de_datos_entrenadores_screen")
+                }
+            )
+        }
+
         composable("base_de_datos_pokemon_screen") {
             // Aquí obtenemos el ViewModel de Firestore para esta pantalla
             val firestoreViewModel: FirestorePokemonViewModel = viewModel()

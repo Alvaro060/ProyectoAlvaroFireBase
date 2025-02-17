@@ -34,9 +34,9 @@ fun BaseDeDatosPokemonScreen(
     // Interceptar el evento de retroceso del dispositivo
     BackHandler {
         // Redirige al menú cuando el botón de retroceso es presionado
-        navController.navigate("menu") {
+        navController.navigate("pantalla_inicio_base_de_datos") {
             // Limpiar la pila de navegación para evitar que el usuario regrese a la pantalla de BaseDeDatosPokemonScreen
-            popUpTo("menu") { inclusive = true }
+            popUpTo("pantalla_inicio_base_de_datos") { inclusive = true }
         }
     }
 
@@ -62,7 +62,7 @@ fun BaseDeDatosPokemonScreen(
 
             // Título
             Text(
-                text = "Base De Datos Pokémons",
+                text = "Pokémons",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
