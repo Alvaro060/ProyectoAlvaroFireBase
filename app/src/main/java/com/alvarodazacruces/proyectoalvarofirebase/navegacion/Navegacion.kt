@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonListViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
@@ -130,16 +131,16 @@ fun Navegacion(
                     pokemonSearchViewModel.clearState()
                     navController.popBackStack()
                     navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo("login") { inclusive = true } // Aseguramos que se limpie la pila desde el login
                     }
                 },
                 onNavigateToPokemons = {
-                    // Navega a la pantalla de la base de datos de Pokemon
+                    // Navega a la pantalla de la base de datos de Pokémon
                     navController.navigate("base_de_datos_pokemon_screen")
                 },
                 onNavigateToEntrenadores = {
                     // Navega a la pantalla de la base de datos de Entrenadores
-                    navController.navigate("base_de_datos_entrenadores_screen")
+                    navController.navigate("base_de_datos_entrenador_screen")
                 }
             )
         }
@@ -216,5 +217,80 @@ fun Navegacion(
                 navController = navController
             )
         }
+
+
+
+        composable("base_de_datos_entrenador_screen") {
+            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
+
+            BaseDeDatosEntrenadorScreen(
+                navController = navController,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.popBackStack()
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onNavigateToAddEntrenador = {
+                    navController.navigate("add_entrenador_screen")
+                },
+                onNavigateToListModifyEntrenador = {
+                    navController.navigate("lista_modificar_entrenador_screen")
+                },
+                onNavigateToVerListaEntrenadores = {
+                    navController.navigate("ver_lista_entrenadores_screen")
+                },
+                onNavigateToDeleteEntrenador = {
+                    navController.navigate("eliminar_entrenador_screen")
+                },
+                viewModel = firestoreViewModel
+            )
+        }
+
+        composable("add_entrenador_screen") {
+            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
+            AgregarEntrenadorScreen(
+                viewModel = firestoreViewModel,
+                navController = navController
+            )
+        }
+
+        composable("seleccionar_pokemon_agregar_entrenador_screen") {
+            val pokemonViewModel: FirestorePokemonViewModel = viewModel()
+            SeleccionarPokemonAgregarEntrenadorScreen(pokemonViewModel = pokemonViewModel, navController = navController)
+        }
+
+        composable("lista_modificar_entrenador_screen") {
+            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
+                ListaModificarEntrenadorScreen(
+                viewModel = firestoreViewModel,
+                navController = navController
+            )
+        }
+
+        composable("modify_entrenador_screen/{entrenadorId}") { backStackEntry ->
+            // Asegúrate de que el id sea accesible
+            val entrenadorId = backStackEntry.arguments?.getString("entrenadorId") ?: ""
+            ModificarEntrenadorScreen(navController = navController, entrenadorId = entrenadorId, viewModel = viewModel())
+        }
+
+        composable("ver_lista_entrenadores_screen") {
+            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
+            VerListaEntrenadoresScreen(
+                viewModel = firestoreViewModel,
+                navController = navController
+            )
+        }
+
+        composable("eliminar_entrenador_screen") {
+            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
+            EliminarEntrenadorScreen(
+                viewModel = firestoreViewModel,
+                navController = navController
+            )
+        }
+
+
     }
 }
