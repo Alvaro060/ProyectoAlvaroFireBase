@@ -291,6 +291,18 @@ fun Navegacion(
             )
         }
 
+        composable("ver_lista_pokemons_entrenador/{entrenadorId}") { backStackEntry ->
+            val entrenadorId = backStackEntry.arguments?.getString("entrenadorId") ?: ""
+            val firestoreEntrenadorViewModel: FirestoreEntrenadorViewModel = viewModel()
+
+            VerListaPokemonsEntrenadorScreen(
+                entrenadorId = entrenadorId,
+                viewModel = firestoreEntrenadorViewModel,
+                navController = navController
+            )
+        }
+
+
 
     }
 }

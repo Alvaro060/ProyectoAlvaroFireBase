@@ -143,4 +143,31 @@ class FirestoreEntrenadorViewModel : ViewModel() {
 
         return entrenadorLiveData
     }
+
+    fun getPokemonDetails(pokemonIds: List<String>, onResult: (List<PokemonBaseDatos>) -> Unit) {
+        if (pokemonIds.isEmpty()) {
+            onResult(emptyList())
+            return
+        }
+
+        val pokemons = mutableListOf<PokemonBaseDatos>()
+
+        for (id in pokemonIds) {
+            firestore.collection("pokemons").document(id).get()
+                .addOnSuccessListener { document ->
+                    val pokemon = document.toObject(PokemonBaseDatos::class.java)
+                    if (pokemon != null) {
+                        pokemons.add(pokemon)
+                    }
+                    if (pokemons.size == pokemonIds.size) {
+                        onResult(pokemons) // Retorna la lista completa cuando termine
+                    }
+                }
+                .addOnFailureListener {
+                    // Manejo de error si es necesario
+                }
+        }
+    }
+
+
 }

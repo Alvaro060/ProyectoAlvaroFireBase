@@ -1,7 +1,7 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,26 +14,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.R
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
-import com.alvarodazacruces.proyectoalvarofirebase.model.EntrenadorBaseDatos
 
 @Composable
 fun VerListaEntrenadoresScreen(
     viewModel: FirestoreEntrenadorViewModel,
     navController: NavController
 ) {
-    // Obtenemos la lista de entrenadores en tiempo real
     val entrenadorList = viewModel.entrenadorList.collectAsState().value
-
-    // Estado para el filtro de búsqueda
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos los entrenadores según el nombre (sin importar mayúsculas o minúsculas)
     val filteredEntrenadorList = entrenadorList.filter { entrenador ->
         entrenador.nombre.lowercase().contains(searchQuery.lowercase())
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Campo de búsqueda
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -44,7 +38,6 @@ fun VerListaEntrenadoresScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si la lista filtrada está vacía, mostramos un mensaje
         if (filteredEntrenadorList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -53,7 +46,6 @@ fun VerListaEntrenadoresScreen(
                 Text(text = "No se encontraron entrenadores con ese nombre.")
             }
         } else {
-            // Lista de entrenadores filtrados
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -63,7 +55,10 @@ fun VerListaEntrenadoresScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                navController.navigate("ver_lista_pokemons_entrenador/${entrenador.id}")
+                            },
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Row(
@@ -71,7 +66,7 @@ fun VerListaEntrenadoresScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_entrenador_pokemon), // Aquí se usa una imagen local
+                                painter = painterResource(id = R.drawable.ic_entrenador_pokemon),
                                 contentDescription = "Imagen de ${entrenador.nombre}",
                                 modifier = Modifier.size(80.dp)
                             )
@@ -99,3 +94,4 @@ fun VerListaEntrenadoresScreen(
         }
     }
 }
+
