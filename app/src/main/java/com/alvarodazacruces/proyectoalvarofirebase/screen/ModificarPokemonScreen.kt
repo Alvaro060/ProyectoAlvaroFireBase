@@ -77,6 +77,7 @@ fun ModificarPokemonScreen(
     // Estados para los campos de texto
     var name by remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
+    var validationError by remember { mutableStateOf("") }  // Para mostrar un mensaje de error
 
     // Buscamos el Pokémon cuyo id coincida con el pokemonId recibido
     val pokemon = viewModel.pokemonList.collectAsState().value.firstOrNull { it.id == pokemonId }
@@ -133,14 +134,29 @@ fun ModificarPokemonScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                // Mostrar el mensaje de error de validación, si existe
+                if (validationError.isNotEmpty()) {
+                    Text(
+                        text = validationError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
                         if (name.isNotEmpty() && type.isNotEmpty()) {
                             coroutineScope.launch {
-                                viewModel.updatePokemon(pokemon.id, name, type)
-                                navController.popBackStack()
+                                val isValid = validatePokemonModificar(name, type)
+                                if (isValid) {
+                                    viewModel.updatePokemon(pokemon.id, name, type)
+                                    navController.popBackStack()
+                                } else {
+                                    validationError = "Tipos inválidos. Verifica el tipo ingresado."
+                                }
                             }
                         } else {
                             Toast.makeText(
@@ -175,4 +191,3 @@ fun ModificarPokemonScreen(
         }
     }
 }
-

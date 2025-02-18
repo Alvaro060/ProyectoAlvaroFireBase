@@ -160,7 +160,7 @@ class FirestoreEntrenadorViewModel : ViewModel() {
                         pokemons.add(pokemon)
                     }
                     if (pokemons.size == pokemonIds.size) {
-                        onResult(pokemons) // Retorna la lista completa cuando termine
+                        onResult(pokemons)
                     }
                 }
                 .addOnFailureListener {
