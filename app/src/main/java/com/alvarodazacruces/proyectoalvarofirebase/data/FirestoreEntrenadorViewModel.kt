@@ -14,7 +14,6 @@ class FirestoreEntrenadorViewModel : ViewModel() {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val entrenadorCollection = firestore.collection("entrenadores")
-    private val pokemonCollection = firestore.collection("pokemons") 
 
     // Estado de la lista de entrenadores
     private val _entrenadorList = MutableStateFlow<List<EntrenadorBaseDatos>>(emptyList())
