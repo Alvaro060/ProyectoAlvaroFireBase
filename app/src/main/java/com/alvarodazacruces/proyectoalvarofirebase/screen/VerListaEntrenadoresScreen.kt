@@ -13,14 +13,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.R
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun VerListaEntrenadoresScreen(
-    viewModel: FirestoreEntrenadorViewModel,
+    viewModel: FirestoreViewModel,
     navController: NavController
 ) {
-    val entrenadorList = viewModel.entrenadorList.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        viewModel.getEntrenadores()
+    }
+
+    val entrenadorList by viewModel.entrenadorList.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredEntrenadorList = entrenadorList.filter { entrenador ->
@@ -94,4 +99,3 @@ fun VerListaEntrenadoresScreen(
         }
     }
 }
-

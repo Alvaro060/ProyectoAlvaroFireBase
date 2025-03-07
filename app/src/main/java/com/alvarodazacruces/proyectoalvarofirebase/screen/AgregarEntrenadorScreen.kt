@@ -1,7 +1,6 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,34 +13,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.model.EntrenadorBaseDatos
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun AgregarEntrenadorScreen(
-    viewModel: FirestoreEntrenadorViewModel,
-    navController: NavController
+    navController: NavController,
+    viewModel: FirestoreViewModel
 ) {
-    // Obtener el ViewModel de Pokémon
-    val pokemonViewModel: FirestorePokemonViewModel = viewModel()
-
-    // Estados para los campos de texto
     var name by remember { mutableStateOf("") }
     var selectedPokemonId by remember { mutableStateOf<String?>(null) }
 
-    // Recuperar el Pokémon seleccionado desde la navegación
     navController.currentBackStackEntry?.savedStateHandle?.get<String>("selectedPokemon")?.let {
         selectedPokemonId = it
     }
 
-    // Cargar la lista de Pokémon desde Firestore
-    val pokemonList by pokemonViewModel.pokemonList.collectAsState(initial = emptyList())
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
-    // Scope para lanzar corrutinas desde Compose
     val coroutineScope = rememberCoroutineScope()
 
     Box(
@@ -56,7 +46,6 @@ fun AgregarEntrenadorScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título
             Text(
                 text = "Agregar Nuevo Entrenador",
                 style = MaterialTheme.typography.headlineMedium.copy(
@@ -69,7 +58,6 @@ fun AgregarEntrenadorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo para ingresar el nombre
             TextField(
                 value = name,
                 onValueChange = { name = it },
@@ -79,10 +67,8 @@ fun AgregarEntrenadorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para agregar Pokémon al entrenador
             Button(
                 onClick = {
-                    // Navegar a la pantalla para seleccionar Pokémon
                     navController.navigate("seleccionar_pokemon_agregar_entrenador_screen")
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -98,21 +84,18 @@ fun AgregarEntrenadorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para agregar el entrenador
             Button(
                 onClick = {
                     if (name.isNotEmpty() && selectedPokemonId != null) {
                         coroutineScope.launch {
-                            // Crear el objeto EntrenadorBaseDatos con el nombre y el ID del Pokémon
                             val entrenador = EntrenadorBaseDatos(
-                                id = "",  // El ID será generado por Firestore
+                                id = "",
                                 nombre = name,
-                                pokemons = selectedPokemonId?.let { listOf(it) } ?: listOf() // Lista con un solo Pokémon
+                                pokemons = selectedPokemonId?.let { listOf(it) } ?: listOf()
                             )
 
-                            // Llamamos a la función de agregar entrenador en el ViewModel
-                            viewModel.addEntrenador(entrenador)  // Agregar el entrenador con el Pokémon seleccionado
-                            navController.popBackStack() // Navega hacia atrás después de agregar
+                            viewModel.addEntrenador(entrenador)
+                            navController.popBackStack()
                         }
                     } else {
                         Toast.makeText(
@@ -123,7 +106,7 @@ fun AgregarEntrenadorScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = selectedPokemonId != null // El botón solo se habilita si un Pokémon ha sido seleccionado
+                enabled = selectedPokemonId != null
             ) {
                 Text(
                     text = "Agregar Entrenador",
@@ -131,6 +114,20 @@ fun AgregarEntrenadorScreen(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
+                )
+            }
+
+            if (isLoading) {
+                Spacer(modifier = Modifier.height(16.dp))
+                CircularProgressIndicator()
+            }
+
+            error?.let {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Error: $it",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }

@@ -11,23 +11,26 @@ import androidx.navigation.compose.rememberNavController
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.navegacion.Navegacion
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreManager // Importa FirestoreManager
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel // Importa FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.ui.theme.ProyectoAlvaroFireBaseTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
 
-    // Inicializamos el objeto FirebaseAuth
     private lateinit var auth: FirebaseAuth
+
+    private lateinit var firestoreManager: FirestoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializa Firebase antes de montar la UI
         FirebaseApp.initializeApp(this)
 
-        // Inicializamos la autenticación de Firebase
         auth = FirebaseAuth.getInstance()
+
+        firestoreManager = FirestoreManager()
 
         setContent {
             ProyectoAlvaroFireBaseTheme {
@@ -36,11 +39,15 @@ class MainActivity : ComponentActivity() {
                     val authViewModel: AuthViewModel = viewModel()
                     val pokemonSearchViewModel: PokemonSearchViewModel = viewModel()
 
-                    // Inicio de la navegación
+                    val firestoreViewModel: FirestoreViewModel = viewModel(
+                        factory = FirestoreViewModel.FirestoreViewModelFactory(firestoreManager)
+                    )
+
                     Navegacion(
                         navController = navController,
                         authViewModel = authViewModel,
-                        pokemonSearchViewModel = pokemonSearchViewModel
+                        pokemonSearchViewModel = pokemonSearchViewModel,
+                        firestoreViewModel = firestoreViewModel
                     )
                 }
             }

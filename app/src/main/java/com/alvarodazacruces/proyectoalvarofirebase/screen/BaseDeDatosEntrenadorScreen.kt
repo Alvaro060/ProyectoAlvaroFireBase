@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import androidx.navigation.NavHostController
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun BaseDeDatosEntrenadorScreen(
@@ -24,7 +24,7 @@ fun BaseDeDatosEntrenadorScreen(
     onNavigateToListModifyEntrenador: () -> Unit,
     onNavigateToDeleteEntrenador: () -> Unit,
     onNavigateToVerListaEntrenadores: () -> Unit,
-    viewModel: FirestoreEntrenadorViewModel
+    viewModel: FirestoreViewModel
 ) {
     // Estado de la UI
     val entrenadorList by viewModel.entrenadorList.collectAsState()

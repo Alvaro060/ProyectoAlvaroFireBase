@@ -11,8 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alvarodazacruces.proyectoalvarofirebase.data.AuthViewModel
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonListViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.data.PokemonSearchViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.screen.*
@@ -21,12 +20,11 @@ import com.alvarodazacruces.proyectoalvarofirebase.screen.*
 fun Navegacion(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    pokemonSearchViewModel: PokemonSearchViewModel
+    pokemonSearchViewModel: PokemonSearchViewModel,
+    firestoreViewModel: FirestoreViewModel
 ) {
-    // Variable para almacenar el destino inicial
     var startDestination by remember { mutableStateOf("login") }
 
-    // Verificar el estado de autenticación al inicio
     LaunchedEffect(Unit) {
         if (authViewModel.isSignedIn()) {
             startDestination = "menu"
@@ -121,7 +119,7 @@ fun Navegacion(
             )
         }
 
-        //Base De Datos
+        // Base de Datos
 
         composable("pantalla_inicio_base_de_datos") {
             PantallaDeInicioBaseDeDatos(
@@ -131,25 +129,19 @@ fun Navegacion(
                     pokemonSearchViewModel.clearState()
                     navController.popBackStack()
                     navController.navigate("login") {
-                        popUpTo("login") { inclusive = true } // Aseguramos que se limpie la pila desde el login
+                        popUpTo("login") { inclusive = true }
                     }
                 },
                 onNavigateToPokemons = {
-                    // Navega a la pantalla de la base de datos de Pokémon
                     navController.navigate("base_de_datos_pokemon_screen")
                 },
                 onNavigateToEntrenadores = {
-                    // Navega a la pantalla de la base de datos de Entrenadores
                     navController.navigate("base_de_datos_entrenador_screen")
                 }
             )
         }
 
         composable("base_de_datos_pokemon_screen") {
-            // Aquí obtenemos el ViewModel de Firestore para esta pantalla
-            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
-
-            // Pasamos las funciones de navegación como parámetros a la pantalla
             BaseDeDatosPokemonScreen(
                 navController = navController,
                 onLogout = {
@@ -172,57 +164,48 @@ fun Navegacion(
                 onNavigateToDeletePokemon = {
                     navController.navigate("eliminar_pokemon_screen")
                 },
-                viewModel = firestoreViewModel // Pasamos el ViewModel
+                viewModel = firestoreViewModel
             )
         }
+
         composable("add_pokemon_screen") {
-            val firestoreViewModel: FirestorePokemonViewModel = viewModel() // Obtenemos el ViewModel
             AgregarPokemonScreen(
-                viewModel = firestoreViewModel, // Pasamos el ViewModel a la pantalla
+                viewModel = firestoreViewModel,
                 navController = navController
             )
         }
+
         composable("lista_modificar_pokemon_screen") {
-            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
             ListaModificarPokemonScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
             )
         }
+
         composable("modify_pokemon_screen/{pokemonId}") { backStackEntry ->
-            // Extraemos el pokemonId de los argumentos de navegación
             val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: ""
-
-            // Declaramos el ViewModel en el ámbito de este composable
-            val firestorePokemonViewModel: FirestorePokemonViewModel = viewModel()
-
-            // Llamamos a la pantalla de modificación, pasando el ViewModel, el navController y el pokemonId
             ModificarPokemonScreen(
-                viewModel = firestorePokemonViewModel,
+                viewModel = firestoreViewModel,
                 navController = navController,
                 pokemonId = pokemonId
             )
         }
+
         composable("ver_lista_pokemon_screen") {
-            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
             VerListaPokemonScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
             )
         }
+
         composable("eliminar_pokemon_screen") {
-            val firestoreViewModel: FirestorePokemonViewModel = viewModel()
             EliminarPokemonScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
             )
         }
 
-
-
         composable("base_de_datos_entrenador_screen") {
-            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
-
             BaseDeDatosEntrenadorScreen(
                 navController = navController,
                 onLogout = {
@@ -249,7 +232,6 @@ fun Navegacion(
         }
 
         composable("add_entrenador_screen") {
-            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
             AgregarEntrenadorScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
@@ -257,26 +239,29 @@ fun Navegacion(
         }
 
         composable("seleccionar_pokemon_agregar_entrenador_screen") {
-            val pokemonViewModel: FirestorePokemonViewModel = viewModel()
-            SeleccionarPokemonAgregarEntrenadorScreen(pokemonViewModel = pokemonViewModel, navController = navController)
+            SeleccionarPokemonAgregarEntrenadorScreen(
+                pokemonViewModel = firestoreViewModel,
+                navController = navController
+            )
         }
 
         composable("lista_modificar_entrenador_screen") {
-            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
-                ListaModificarEntrenadorScreen(
+            ListaModificarEntrenadorScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
             )
         }
 
         composable("modify_entrenador_screen/{entrenadorId}") { backStackEntry ->
-            // Asegúrate de que el id sea accesible
             val entrenadorId = backStackEntry.arguments?.getString("entrenadorId") ?: ""
-            ModificarEntrenadorScreen(navController = navController, entrenadorId = entrenadorId, viewModel = viewModel())
+            ModificarEntrenadorScreen(
+                navController = navController,
+                entrenadorId = entrenadorId,
+                viewModel = firestoreViewModel
+            )
         }
 
         composable("ver_lista_entrenadores_screen") {
-            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
             VerListaEntrenadoresScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
@@ -284,7 +269,6 @@ fun Navegacion(
         }
 
         composable("eliminar_entrenador_screen") {
-            val firestoreViewModel: FirestoreEntrenadorViewModel = viewModel()
             EliminarEntrenadorScreen(
                 viewModel = firestoreViewModel,
                 navController = navController
@@ -293,16 +277,13 @@ fun Navegacion(
 
         composable("ver_lista_pokemons_entrenador/{entrenadorId}") { backStackEntry ->
             val entrenadorId = backStackEntry.arguments?.getString("entrenadorId") ?: ""
-            val firestoreEntrenadorViewModel: FirestoreEntrenadorViewModel = viewModel()
 
             VerListaPokemonsEntrenadorScreen(
                 entrenadorId = entrenadorId,
-                viewModel = firestoreEntrenadorViewModel,
+                viewModel = firestoreViewModel,
                 navController = navController
             )
         }
-
-
 
     }
 }

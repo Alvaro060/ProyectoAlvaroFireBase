@@ -12,31 +12,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonBaseDatos
 
 @Composable
 fun EliminarPokemonScreen(
-    viewModel: FirestorePokemonViewModel,
+    viewModel: FirestoreViewModel,
     navController: NavController
 ) {
-    // Obtenemos la lista de Pokémon en tiempo real
+    LaunchedEffect(Unit) {
+        viewModel.getPokemons()
+    }
+
     val pokemonList = viewModel.pokemonList.collectAsState().value
 
-    // Estado para el filtro de búsqueda
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos los Pokémon según el nombre (sin importar mayúsculas o minúsculas)
     val filteredPokemonList = pokemonList.filter { pokemon ->
         pokemon.name.lowercase().contains(searchQuery.lowercase())
     }
 
-    // Estado para controlar la visibilidad del AlertDialog
     var showDialog by remember { mutableStateOf(false) }
     var pokemonToDelete by remember { mutableStateOf<PokemonBaseDatos?>(null) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Campo de búsqueda
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -47,7 +46,6 @@ fun EliminarPokemonScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si la lista filtrada está vacía, mostramos un mensaje
         if (filteredPokemonList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -56,14 +54,12 @@ fun EliminarPokemonScreen(
                 Text(text = "No se encontraron Pokémon con ese nombre.")
             }
         } else {
-            // Lista de Pokémon filtrados
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
                 items(filteredPokemonList) { pokemon ->
-                    // Card clicable para eliminar
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -78,7 +74,6 @@ fun EliminarPokemonScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Cargamos la imagen del Pokémon utilizando Coil
                             AsyncImage(
                                 model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
                                 contentDescription = "Imagen de ${pokemon.name}",
@@ -106,7 +101,6 @@ fun EliminarPokemonScreen(
         }
     }
 
-    // Mostrar el AlertDialog de confirmación
     if (showDialog && pokemonToDelete != null) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -115,9 +109,9 @@ fun EliminarPokemonScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // Lógica para eliminar el Pokémon
+                        // Eliminar el Pokémon seleccionado
                         pokemonToDelete?.let { pokemon ->
-                            viewModel.deletePokemon(pokemon)  // Asegúrate que esta función elimina el Pokémon
+                            viewModel.deletePokemon(pokemon.id)
                             showDialog = false
                             Toast.makeText(navController.context, "Pokémon eliminado", Toast.LENGTH_SHORT).show()
                         }

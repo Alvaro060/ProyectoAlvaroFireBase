@@ -87,6 +87,10 @@ dependencies {
 
     implementation(libs.firebase.firestore)
 
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation ("com.google.firebase:firebase-firestore-ktx:24.4.0")
+    implementation (platform("com.google.firebase:firebase-bom:33.8.0"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

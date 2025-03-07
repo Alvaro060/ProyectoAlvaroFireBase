@@ -12,28 +12,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
-import coil.compose.AsyncImage
 import com.alvarodazacruces.proyectoalvarofirebase.R
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun ListaModificarEntrenadorScreen(
-    viewModel: FirestoreEntrenadorViewModel,
+    viewModel: FirestoreViewModel,
     navController: NavController
 ) {
-    // Obtenemos la lista de entrenadores en tiempo real
+
+    LaunchedEffect(Unit) {
+        viewModel.getEntrenadores()
+    }
+
     val entrenadorList by viewModel.entrenadorList.collectAsState()
 
-    // Estado para el filtro de búsqueda
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos los entrenadores según el nombre (sin importar mayúsculas o minúsculas)
     val filteredEntrenadorList = entrenadorList.filter { entrenador ->
         entrenador.nombre.lowercase().contains(searchQuery.lowercase())
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Campo de búsqueda
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -44,7 +44,6 @@ fun ListaModificarEntrenadorScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si la lista filtrada está vacía, mostramos un mensaje
         if (filteredEntrenadorList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -53,7 +52,6 @@ fun ListaModificarEntrenadorScreen(
                 Text(text = "No se encontraron entrenadores con ese nombre.")
             }
         } else {
-            // Lista de entrenadores filtrados
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -65,7 +63,6 @@ fun ListaModificarEntrenadorScreen(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                             .clickable {
-                                // Navegamos a la pantalla de modificación pasando el id del entrenador
                                 navController.navigate("modify_entrenador_screen/${entrenador.id}")
                             },
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -75,7 +72,7 @@ fun ListaModificarEntrenadorScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_entrenador_pokemon), // Aquí se usa una imagen local
+                                painter = painterResource(id = R.drawable.ic_entrenador_pokemon),
                                 contentDescription = "Imagen de ${entrenador.nombre}",
                                 modifier = Modifier.size(80.dp)
                             )

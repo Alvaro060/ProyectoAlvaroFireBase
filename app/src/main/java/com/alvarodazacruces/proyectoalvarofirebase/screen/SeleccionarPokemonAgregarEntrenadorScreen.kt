@@ -12,25 +12,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun SeleccionarPokemonAgregarEntrenadorScreen(
-    pokemonViewModel: FirestorePokemonViewModel,
+    pokemonViewModel: FirestoreViewModel,
     navController: NavController
 ) {
-    // Estado que almacenará la lista de Pokémon
+
+    LaunchedEffect(Unit) {
+        pokemonViewModel.getPokemons()
+    }
+
     val pokemonList by pokemonViewModel.pokemonList.collectAsState(initial = emptyList())
 
-    // Estado para el filtro de búsqueda
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos la lista de Pokémon según el nombre
     val filteredPokemonList = pokemonList.filter { pokemon ->
         pokemon.name.lowercase().contains(searchQuery.lowercase())
     }
 
-    // Si la lista de Pokémon está vacía, mostramos un mensaje
     if (filteredPokemonList.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -41,7 +42,6 @@ fun SeleccionarPokemonAgregarEntrenadorScreen(
     } else {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
 
-            // Campo de búsqueda
             item {
                 TextField(
                     value = searchQuery,
@@ -54,19 +54,17 @@ fun SeleccionarPokemonAgregarEntrenadorScreen(
                 )
             }
 
-            // Lista filtrada de Pokémon
             items(filteredPokemonList) { pokemon ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 16.dp)
                         .clickable {
-                            // Pasamos el ID del Pokémon seleccionado al BackStack
                             navController.previousBackStackEntry?.savedStateHandle?.set("selectedPokemon", pokemon.id)
-                            navController.popBackStack() // Volver a la pantalla anterior
+                            navController.popBackStack()
                         },
                     elevation = CardDefaults.cardElevation(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)) // Fondo verde suave
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9))
                 ) {
                     Row(
                         modifier = Modifier
@@ -74,7 +72,6 @@ fun SeleccionarPokemonAgregarEntrenadorScreen(
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Imagen del Pokémon
                         AsyncImage(
                             model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
                             contentDescription = "Imagen de ${pokemon.name}",
@@ -85,7 +82,7 @@ fun SeleccionarPokemonAgregarEntrenadorScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "#${pokemon.id} ${pokemon.name.capitalize()}",
+                                text = "Nombre: ${pokemon.name.capitalize()}",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )

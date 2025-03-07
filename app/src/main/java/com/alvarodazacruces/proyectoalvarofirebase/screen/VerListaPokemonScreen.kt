@@ -11,26 +11,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun VerListaPokemonScreen(
-    viewModel: FirestorePokemonViewModel,
+    viewModel: FirestoreViewModel,
     navController: NavController
-) {
-    // Obtenemos la lista de Pokémon en tiempo real
-    val pokemonList = viewModel.pokemonList.collectAsState().value
+){
 
-    // Estado para el filtro de búsqueda
+    LaunchedEffect(Unit) {
+        viewModel.getPokemons()
+    }
+
+    val pokemonList by viewModel.pokemonList.collectAsState()
+
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos los Pokémon según el nombre (sin importar mayúsculas o minúsculas)
     val filteredPokemonList = pokemonList.filter { pokemon ->
         pokemon.name.lowercase().contains(searchQuery.lowercase())
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Campo de búsqueda
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -41,7 +42,6 @@ fun VerListaPokemonScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si la lista filtrada está vacía, mostramos un mensaje
         if (filteredPokemonList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -50,7 +50,6 @@ fun VerListaPokemonScreen(
                 Text(text = "No se encontraron Pokémon con ese nombre.")
             }
         } else {
-            // Lista de Pokémon filtrados
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -67,7 +66,6 @@ fun VerListaPokemonScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Cargamos la imagen del Pokémon utilizando Coil
                             AsyncImage(
                                 model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
                                 contentDescription = "Imagen de ${pokemon.name}",

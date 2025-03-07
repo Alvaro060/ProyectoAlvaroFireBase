@@ -14,31 +14,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alvarodazacruces.proyectoalvarofirebase.R
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreEntrenadorViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.model.EntrenadorBaseDatos
 
 @Composable
 fun EliminarEntrenadorScreen(
-    viewModel: FirestoreEntrenadorViewModel,
+    viewModel: FirestoreViewModel,
     navController: NavController
 ) {
-    // Obtenemos la lista de entrenadores en tiempo real
-    val entrenadorList = viewModel.entrenadorList.collectAsState().value
 
-    // Estado para el filtro de búsqueda
+    LaunchedEffect(Unit) {
+        viewModel.getEntrenadores()
+    }
+
+    val entrenadorList by viewModel.entrenadorList.collectAsState()
+
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos los entrenadores según el nombre (sin importar mayúsculas o minúsculas)
     val filteredEntrenadorList = entrenadorList.filter { entrenador ->
         entrenador.nombre.lowercase().contains(searchQuery.lowercase())
     }
 
-    // Estado para controlar la visibilidad del AlertDialog
     var showDialog by remember { mutableStateOf(false) }
     var entrenadorToDelete by remember { mutableStateOf<EntrenadorBaseDatos?>(null) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Campo de búsqueda
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -49,7 +49,6 @@ fun EliminarEntrenadorScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si la lista filtrada está vacía, mostramos un mensaje
         if (filteredEntrenadorList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -58,14 +57,12 @@ fun EliminarEntrenadorScreen(
                 Text(text = "No se encontraron entrenadores con ese nombre.")
             }
         } else {
-            // Lista de entrenadores filtrados
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
                 items(filteredEntrenadorList) { entrenador ->
-                    // Card clicable para eliminar
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -82,7 +79,7 @@ fun EliminarEntrenadorScreen(
                         ) {
 
                             Image(
-                                painter = painterResource(id = R.drawable.ic_entrenador_pokemon), // Aquí se usa una imagen local
+                                painter = painterResource(id = R.drawable.ic_entrenador_pokemon),
                                 contentDescription = "Imagen de ${entrenador.nombre}",
                                 modifier = Modifier.size(80.dp)
                             )
@@ -110,7 +107,6 @@ fun EliminarEntrenadorScreen(
         }
     }
 
-    // Mostrar el AlertDialog de confirmación
     if (showDialog && entrenadorToDelete != null) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -119,9 +115,8 @@ fun EliminarEntrenadorScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // Lógica para eliminar el entrenador
                         entrenadorToDelete?.let { entrenador ->
-                            viewModel.deleteEntrenador(entrenador)  // Asegúrate que esta función elimina el entrenador
+                            viewModel.deleteEntrenador(entrenador.id)
                             showDialog = false
                             Toast.makeText(navController.context, "Entrenador eliminado", Toast.LENGTH_SHORT).show()
                         }

@@ -11,26 +11,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun ListaModificarPokemonScreen(
-    viewModel: FirestorePokemonViewModel,
+    viewModel: FirestoreViewModel,
     navController: NavController
 ) {
-    // Obtenemos la lista de Pokémon en tiempo real
-    val pokemonList = viewModel.pokemonList.collectAsState().value
+    LaunchedEffect(Unit) {
+        viewModel.getPokemons()
+    }
 
-    // Estado para el filtro de búsqueda
+    val pokemonList by viewModel.pokemonList.collectAsState()
+
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos los Pokémon según el nombre (sin importar mayúsculas o minúsculas)
     val filteredPokemonList = pokemonList.filter { pokemon ->
         pokemon.name.lowercase().contains(searchQuery.lowercase())
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Campo de búsqueda
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -41,7 +41,6 @@ fun ListaModificarPokemonScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si la lista filtrada está vacía, mostramos un mensaje
         if (filteredPokemonList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -50,7 +49,6 @@ fun ListaModificarPokemonScreen(
                 Text(text = "No se encontraron Pokémon con ese nombre.")
             }
         } else {
-            // Lista de Pokémon filtrados
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -62,7 +60,6 @@ fun ListaModificarPokemonScreen(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                             .clickable {
-                                // Navegamos a la pantalla de modificación pasando el id del Pokémon
                                 navController.navigate("modify_pokemon_screen/${pokemon.id}")
                             },
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -71,7 +68,6 @@ fun ListaModificarPokemonScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Usamos AsyncImage de Coil para cargar la imagen desde la API
                             AsyncImage(
                                 model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
                                 contentDescription = "Imagen de ${pokemon.name}",

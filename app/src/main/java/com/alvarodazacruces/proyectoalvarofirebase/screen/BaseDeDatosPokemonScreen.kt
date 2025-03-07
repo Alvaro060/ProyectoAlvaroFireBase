@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import androidx.navigation.NavHostController
-import com.alvarodazacruces.proyectoalvarofirebase.data.FirestorePokemonViewModel
+import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
 @Composable
 fun BaseDeDatosPokemonScreen(
@@ -24,7 +24,7 @@ fun BaseDeDatosPokemonScreen(
     onNavigateToListModifyPokemon: () -> Unit,
     onNavigateToDeletePokemon: () -> Unit,
     onNavigateToVerListaPokemon: () -> Unit,
-    viewModel: FirestorePokemonViewModel
+    viewModel: FirestoreViewModel
 ) {
     // Estado de la UI
     val pokemonList by viewModel.pokemonList.collectAsState()
