@@ -1,9 +1,12 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +20,7 @@ import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonBaseDatos
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarPokemonScreen(
     viewModel: FirestoreViewModel,
@@ -30,14 +34,34 @@ fun AgregarPokemonScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    BackHandler {
+        navController.popBackStack()
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Volver") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -46,7 +70,7 @@ fun AgregarPokemonScreen(
                 text = "Agregar Nuevo Pokémon",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
+                    fontSize = 28.sp
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center

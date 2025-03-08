@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +18,7 @@ import coil.compose.AsyncImage
 import androidx.navigation.NavHostController
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseDeDatosEntrenadorScreen(
     navController: NavHostController,
@@ -26,41 +29,53 @@ fun BaseDeDatosEntrenadorScreen(
     onNavigateToVerListaEntrenadores: () -> Unit,
     viewModel: FirestoreViewModel
 ) {
-    // Estado de la UI
     val entrenadorList by viewModel.entrenadorList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    // Interceptar el evento de retroceso del dispositivo
     BackHandler {
-        // Redirige al menú cuando el botón de retroceso es presionado
         navController.navigate("pantalla_inicio_base_de_datos") {
-            // Limpiar la pila de navegación para evitar que el usuario regrese a la pantalla de BaseDeDatosEntrenadoresScreen
             popUpTo("pantalla_inicio_base_de_datos") { inclusive = true }
         }
     }
 
-    // Layout principal
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Volver") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate("pantalla_inicio_base_de_datos") {
+                            popUpTo("pantalla_inicio_base_de_datos") { inclusive = true }
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp), // Añadido un padding horizontal para centrar el contenido
-            verticalArrangement = Arrangement.Center, // Centra los elementos verticalmente
-            horizontalAlignment = Alignment.CenterHorizontally // Centra los elementos horizontalmente
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Imagen de encabezado
             AsyncImage(
-                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/26.png", // Imagen de Pikachu, por ejemplo
+                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/26.png",
                 contentDescription = "Logo",
                 modifier = Modifier.size(200.dp)
             )
-
-            // Título
             Text(
                 text = "Entrenadores",
                 style = MaterialTheme.typography.headlineMedium.copy(
@@ -72,8 +87,6 @@ fun BaseDeDatosEntrenadorScreen(
                     .padding(bottom = 32.dp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
-
-            // Mostrar error si existe
             error?.let {
                 Text(
                     text = it,
@@ -83,7 +96,6 @@ fun BaseDeDatosEntrenadorScreen(
                 )
             }
 
-            // Botón de "Agregar Entrenador"
             Button(
                 onClick = onNavigateToAddEntrenador,
                 modifier = Modifier
@@ -99,7 +111,6 @@ fun BaseDeDatosEntrenadorScreen(
                 )
             }
 
-            // Botón de "Modificar Entrenador"
             Button(
                 onClick = onNavigateToListModifyEntrenador,
                 modifier = Modifier
@@ -115,7 +126,6 @@ fun BaseDeDatosEntrenadorScreen(
                 )
             }
 
-            // Botón de "Ver Lista de Entrenadores"
             Button(
                 onClick = onNavigateToVerListaEntrenadores,
                 modifier = Modifier
@@ -131,7 +141,6 @@ fun BaseDeDatosEntrenadorScreen(
                 )
             }
 
-            // Botón de "Eliminar Entrenador"
             Button(
                 onClick = onNavigateToDeleteEntrenador,
                 modifier = Modifier
@@ -149,7 +158,6 @@ fun BaseDeDatosEntrenadorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón de "Cerrar Sesión"
             Button(
                 onClick = onLogout,
                 modifier = Modifier

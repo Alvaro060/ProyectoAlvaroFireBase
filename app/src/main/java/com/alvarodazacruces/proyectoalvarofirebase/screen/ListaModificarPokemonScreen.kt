@@ -1,9 +1,12 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +16,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaModificarPokemonScreen(
     viewModel: FirestoreViewModel,
@@ -23,70 +27,98 @@ fun ListaModificarPokemonScreen(
     }
 
     val pokemonList by viewModel.pokemonList.collectAsState()
-
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredPokemonList = pokemonList.filter { pokemon ->
-        pokemon.name.lowercase().contains(searchQuery.lowercase())
+    BackHandler {
+        navController.popBackStack()
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        TextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Buscar Pokémon") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Modificar Pokémon") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            TextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Buscar Pokémon") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        if (filteredPokemonList.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "No se encontraron Pokémon con ese nombre.")
+            val filteredPokemonList = pokemonList.filter { pokemon ->
+                pokemon.name.lowercase().contains(searchQuery.lowercase())
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                items(filteredPokemonList) { pokemon ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .clickable {
-                                navController.navigate("modify_pokemon_screen/${pokemon.id}")
-                            },
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+
+            if (filteredPokemonList.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No se encontraron Pokémon con ese nombre.")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    items(filteredPokemonList) { pokemon ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .clickable {
+                                    navController.navigate("modify_pokemon_screen/${pokemon.id}")
+                                },
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
-                            AsyncImage(
-                                model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
-                                contentDescription = "Imagen de ${pokemon.name}",
-                                modifier = Modifier.size(80.dp)
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = "ID: ${pokemon.id}",
-                                    style = MaterialTheme.typography.titleMedium
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AsyncImage(
+                                    model = "https://img.pokemondb.net/artwork/large/${pokemon.name.lowercase()}.jpg",
+                                    contentDescription = "Imagen de ${pokemon.name}",
+                                    modifier = Modifier.size(80.dp)
                                 )
-                                Text(
-                                    text = "Nombre: ${pokemon.name}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Tipo: ${pokemon.type}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = "ID: ${pokemon.id}",
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        text = "Nombre: ${pokemon.name}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Text(
+                                        text = "Tipo: ${pokemon.type}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
                             }
                         }
                     }

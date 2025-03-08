@@ -8,8 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,21 +22,39 @@ fun PantallaDeInicioBaseDeDatos(
     onNavigateToPokemons: () -> Unit,
     onNavigateToEntrenadores: () -> Unit
 ) {
-
     BackHandler {
-        // Redirige al menú cuando el botón de retroceso es presionado
         navController.navigate("menu") {
-            // Limpiar la pila de navegación para evitar que el usuario regrese a la pantalla de BaseDeDatosPokemonScreen
             popUpTo("menu") { inclusive = true }
         }
     }
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Volver") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate("menu") {
+                            popUpTo("menu") { inclusive = true }
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -50,9 +66,8 @@ fun PantallaDeInicioBaseDeDatos(
                 modifier = Modifier.size(200.dp)
             )
 
-            // Título
             Text(
-                text = "Base de Datos",
+                text = "Base De Datos",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
@@ -110,7 +125,6 @@ fun PantallaDeInicioBaseDeDatos(
                     )
                 )
             }
-
         }
     }
 }

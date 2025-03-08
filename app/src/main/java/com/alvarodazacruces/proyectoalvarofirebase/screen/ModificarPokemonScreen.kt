@@ -1,13 +1,22 @@
 package com.alvarodazacruces.proyectoalvarofirebase.screen
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +30,7 @@ import com.alvarodazacruces.proyectoalvarofirebase.data.FirestoreViewModel
 import com.alvarodazacruces.proyectoalvarofirebase.model.PokemonBaseDatos
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModificarPokemonScreen(
     viewModel: FirestoreViewModel,
@@ -43,14 +53,34 @@ fun ModificarPokemonScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    BackHandler {
+        navController.popBackStack()
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Volver") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -59,7 +89,7 @@ fun ModificarPokemonScreen(
                 text = "Modificar Pokémon",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
+                    fontSize = 28.sp
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
@@ -106,7 +136,6 @@ fun ModificarPokemonScreen(
                                 )
 
                                 viewModel.updatePokemon(updatedPokemon)
-
                                 navController.popBackStack()
                             }
                         } else {
